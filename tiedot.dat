@@ -1,0 +1,7 @@
+Rubikin kuution ratkaisurekisteri
+; kenttien järjestys tiedostossa on seuraava:
+; id | Aika      | Päivämäärä | Kellonaika | DNF | +2s |
+1    | 00:25,248 | 11.1.2024  | 12.53      | F   | T   |
+2    | 00:22,805 | 11.1.2024  | 12.54      | F   | F   |
+3    | 00:28,455 | 11.1.2024  | 12.58      | T   | F   |
+4    | 00:19,715 | 11.1.2024  | 13.00      | F   | F   |
