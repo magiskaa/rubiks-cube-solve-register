@@ -16,8 +16,8 @@ public class RubikinkuutioMain extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			BorderPane root = (BorderPane)FXMLLoader.load(getClass().getResource("RubikinkuutioGUIView.fxml"));
-			Scene scene = new Scene(root,800,550);
+			BorderPane root = (BorderPane)FXMLLoader.load(getClass().getResource("RubikinkuutioAlkuView.fxml"));
+			Scene scene = new Scene(root,450,300);
 			scene.getStylesheets().add(getClass().getResource("rubikinkuutio.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
