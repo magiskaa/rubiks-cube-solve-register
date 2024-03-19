@@ -3,7 +3,7 @@ package fxrubkinkuutio;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.fxml.FXMLLoader;
 
 /**
@@ -16,11 +16,20 @@ public class RubikinkuutioMain extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			BorderPane root = (BorderPane)FXMLLoader.load(getClass().getResource("RubikinkuutioAlkuView.fxml"));
-			Scene scene = new Scene(root,450,300);
-			scene.getStylesheets().add(getClass().getResource("rubikinkuutio.css").toExternalForm());
+		    
+		    final FXMLLoader ldr = new FXMLLoader(getClass().getResource("RubikinkuutioGUIView.fxml"));
+		    final Pane root = (Pane)ldr.load();
+		    final RubikinkuutioGUIController rekisteriCtrl = (RubikinkuutioGUIController)ldr.getController();
+		    
+		    final Scene scene = new Scene(root);
+		    scene.getStylesheets().add(getClass().getResource("rubikinkuutio.css").toExternalForm());
 			primaryStage.setScene(scene);
+			primaryStage.setTitle("Rekisteri");
+			
+			Rekisteri rekisteri = new Rekisteri();
+			rekisteriCtrl.setRekisteri(rekisteri);
 			primaryStage.show();
+			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
