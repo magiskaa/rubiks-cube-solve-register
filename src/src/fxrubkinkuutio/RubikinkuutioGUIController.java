@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
@@ -58,6 +59,11 @@ public class RubikinkuutioGUIController implements Initializable {
     @FXML private void handleLisaa() {
         //ModalController.showModal(RubikinkuutioGUIController.class.getResource("RubikinkuutioLisaaView.fxml"), null,null,null);
         lisaaRatkaisu();
+    }
+    
+    @FXML private void handleLisaaSekoitus() {
+        //ModalController.showModal(RubikinkuutioGUIController.class.getResource("RubikinkuutioLisaaSekoitusView.fxml"), null,null,null);
+        lisaaSekoitus();
     }
 
     @FXML private void handlePoista() {
@@ -121,7 +127,7 @@ public class RubikinkuutioGUIController implements Initializable {
         
         areaRatkaisu.setText("");
         try (PrintStream os = TextAreaOutputStream.getTextPrintStream(areaRatkaisu)) {
-            ratkaisuKohdalla.tulosta(os);
+            tulosta(os,ratkaisuKohdalla);
         }
         
     }
@@ -159,19 +165,38 @@ public class RubikinkuutioGUIController implements Initializable {
     }
     
     /**
+     * 
+     */
+    public void lisaaSekoitus() {
+        if (ratkaisuKohdalla == null) return;
+        Sekoitus sek = new Sekoitus();
+        sek.rekisteroi();
+        sek.testiArvot(ratkaisuKohdalla.getId());
+        rekisteri.lisaa(sek);
+        hae(ratkaisuKohdalla.getId());
+    }
+    
+    /**
+     * @param os mikä virta
+     * @param ratkaisu mikä ratkaisu
+     */
+    public void tulosta(PrintStream os, final Ratkaisu ratkaisu) {
+        os.println("-------------------------------------------");
+        ratkaisu.tulosta(os);
+        os.println("-------------------------------------------");
+        List<Sekoitus> sekoitukset = rekisteri.annaSekoitukset(ratkaisu);
+        for (Sekoitus sek : sekoitukset)
+            sek.tulosta(os);
+    }
+    
+    
+    /**
      * @param rekisteri ni
      */
     public void setRekisteri(Rekisteri rekisteri) {
         this.rekisteri = rekisteri;
         naytaRatkaisu();
-    }
-    
-    
-    
-    
-    
-    
-    
+    } 
     
     
     

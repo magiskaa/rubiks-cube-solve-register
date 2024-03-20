@@ -28,6 +28,18 @@ public class Ratkaisu {
         kaksiS = true;
     }
     
+    
+    /**
+     * 
+     */
+    public void testiArvot2() {
+        aika = "00;17,478";
+        pvm = "19.3.2024";
+        kellonaika = "18:51";
+        dnf = false;
+        kaksiS = false;
+    }
+    
     /**
      * @param out ps
      */

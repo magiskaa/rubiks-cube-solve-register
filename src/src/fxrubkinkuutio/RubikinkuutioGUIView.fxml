@@ -106,7 +106,8 @@
          <children>
             <Button layoutX="474.0" layoutY="8.0" mnemonicParsing="false" onAction="#handleMuokkaa" prefHeight="25.0" prefWidth="90.0" text="Muokkaa" />
             <Button layoutX="581.0" layoutY="8.0" mnemonicParsing="false" onAction="#handlePoista" style="-fx-background-color: red;" text="Poista" />
-            <Button layoutX="54.0" layoutY="8.0" mnemonicParsing="false" onAction="#handleLisaa" prefHeight="25.0" prefWidth="90.0" text="Lisää Ratkaisu" />
+            <Button layoutX="14.0" layoutY="8.0" mnemonicParsing="false" onAction="#handleLisaa" prefHeight="25.0" prefWidth="90.0" text="Lisää Ratkaisu" />
+            <Button layoutX="111.0" layoutY="8.0" mnemonicParsing="false" onAction="#handleLisaaSekoitus" prefHeight="25.0" prefWidth="90.0" text="Lisää Sekoitus" />
          </children>
       </AnchorPane>
    </bottom>

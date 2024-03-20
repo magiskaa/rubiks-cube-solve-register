@@ -1,5 +1,7 @@
 package fxrubkinkuutio;
 
+import java.util.List;
+
 /**
  * Rekisteri
  * @author Valtteri
@@ -8,6 +10,7 @@ package fxrubkinkuutio;
  */
 public class Rekisteri {
     private final Ratkaisut ratkaisut = new Ratkaisut();
+    private final Sekoitukset sekoitukset = new Sekoitukset();
     
     /**
      * @return lkm
@@ -33,12 +36,27 @@ public class Rekisteri {
     }
     
     /**
+     * @param sek sekoitus
+     */
+    public void lisaa(Sekoitus sek) {
+        sekoitukset.lisaa(sek);
+    }
+    
+    /**
      * @param i indeksi
      * @return viite
      * @throws IndexOutOfBoundsException virhe
      */
     public Ratkaisu annaRatkaisu(int i) throws IndexOutOfBoundsException {
         return ratkaisut.anna(i);
+    }
+    
+    /**
+     * @param ratkaisu ratkaisu
+     * @return ni
+     */
+    public List<Sekoitus> annaSekoitukset(Ratkaisu ratkaisu) {
+        return sekoitukset.annaSekoitukset(ratkaisu.getId());   
     }
     
     /**
