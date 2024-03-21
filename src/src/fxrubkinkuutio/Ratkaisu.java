@@ -9,13 +9,13 @@ import java.io.*;
  *
  */
 public class Ratkaisu {
-    private int id;
+    private int id = 1;
     private String aika = " ";
     private String pvm = " ";
     private String kellonaika = " ";
     private boolean dnf = false;
     private boolean kaksiS = false;
-    private int seuraavaId = 1;
+    private static int seuraavaId = 1;
     
     /**
      * antaa testiarvot ratkaisulle
@@ -45,7 +45,7 @@ public class Ratkaisu {
      * @param out ps
      */
     public void tulosta(PrintStream out) {
-        out.println(String.format("%03d", id, 3) + " | " + aika);
+        out.println(id + " | " + aika);
         out.println(pvm + " | " + kellonaika);
         out.println("DNF: " + dnf);
         out.println("+2s: " + kaksiS);
@@ -120,7 +120,7 @@ public class Ratkaisu {
         toka.testiArvot();
         toka.tulosta(System.out);
 
-        toka.testiArvot();
+        toka.testiArvot2();
         toka.tulosta(System.out);
     }
     
