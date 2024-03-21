@@ -15,13 +15,14 @@ public class Sekoitus {
     private static int seuraavaNro = 1;
     
     /**
-     * 
+     * muodostaja
      */
     public Sekoitus() {
         // ei vielä
     }
     
     /**
+     * muodostaja
      * @param ratkaisuId ratkaisu id
      */
     public Sekoitus(int ratkaisuId) {
@@ -29,7 +30,8 @@ public class Sekoitus {
     }
     
     /**
-     * @param nro number
+     * antaa sekoitukselle testiarvot
+     * @param nro ratkaisun numero
      */
     public void testiArvot(int nro) {
         ratkaisuId = nro;
@@ -37,21 +39,36 @@ public class Sekoitus {
     }
     
     /**
-     * @param out mikä virta
+     * tulostaa sekoituksen
+     * @param out mikä tietovirta
      */
     public void tulosta(PrintStream out) {
         out.println(sekoitus);
     }
     
     /**
-     * @param os mikä virta
+     * tulostaa sekoituksen
+     * @param os mikä tietovirta
      */
     public void tulosta(OutputStream os) {
         tulosta(new PrintStream(os));
     }
     
     /**
+     * rekisteröi sekoituksen ja palauttaa sen id:n
      * @return id
+     * @example
+     * <pre name="test">
+     *   Sekoitus sek1 = new Sekoitus();
+     *   sek1.getId() === 0;
+     *   sek1.rekisteroi();
+     *   Sekoitus sek2 = new Sekoitus();
+     *   sek2.rekisteroi();
+     *   int n1 = sek1.getId();
+     *   int n2 = sek2.getId();
+     *   n1 === n2-1;
+     * </pre>
+
      */
     public int rekisteroi() {
         id = seuraavaNro;
@@ -60,6 +77,7 @@ public class Sekoitus {
     }
     
     /**
+     * palauttaa sekoituksen id:n
      * @return sekoituksen id
      */
     public int getId() {
@@ -67,6 +85,7 @@ public class Sekoitus {
     }
     
     /**
+     * palauttaa sekoitukseen liittyvän ratkaisun id:n
      * @return ratkaisun id
      */
     public int getRatkaisuId() {
@@ -74,6 +93,7 @@ public class Sekoitus {
     }
     
     /**
+     * palauttaa sekoituksen
      * @return sekoitus
      */
     public String getSekoitus() {

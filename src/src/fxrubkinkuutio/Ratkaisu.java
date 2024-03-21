@@ -18,7 +18,7 @@ public class Ratkaisu {
     private int seuraavaId = 1;
     
     /**
-     * 
+     * antaa testiarvot ratkaisulle
      */
     public void testiArvot() {
         aika = "00;24,284";
@@ -30,7 +30,7 @@ public class Ratkaisu {
     
     
     /**
-     * 
+     * antaa testiarvot ratkaisulle
      */
     public void testiArvot2() {
         aika = "00;17,478";
@@ -41,6 +41,7 @@ public class Ratkaisu {
     }
     
     /**
+     * tulostaa ratkaisun tiedot
      * @param out ps
      */
     public void tulosta(PrintStream out) {
@@ -52,6 +53,7 @@ public class Ratkaisu {
     }
     
     /**
+     * tulostaa ratkaisun tiedot
      * @param os os
      */
     public void tulosta(OutputStream os) {
@@ -59,7 +61,20 @@ public class Ratkaisu {
     }
     
     /**
-     * @return id
+     * rekisteröi ratkaisun
+     * @return ratkaisun id:n
+     * @example
+     * <pre name="test">
+     *   Ratkaisu eka = new Ratkaisu();
+     *   eka.getId() === 0;
+     *   eka.rekisteroi();
+     *   Ratkaisu toka = new Ratkaisu();
+     *   toka.rekisteroi();
+     *   int n1 = eka.getId();
+     *   int n2 = toka.getId();
+     *   n1 === n2-1;
+     * </pre>
+
      */
     public int rekisteroi() {
         id = seuraavaId;
@@ -68,6 +83,7 @@ public class Ratkaisu {
     }
     
     /**
+     * palauttaa ratkaisun id:n
      * @return id
      */
     public int getId() {
@@ -75,7 +91,15 @@ public class Ratkaisu {
     }
     
     /**
+     * palauttaa ratkaisun ajan
      * @return aika
+     * @example
+     * <pre name="test">
+     *   Ratkaisu eka = new Ratkaisu();
+     *   eka.testiArvot();
+     *   aku.getAika() === "15:54";
+     * </pre>
+
      */
     public String getAika() {
         return aika;

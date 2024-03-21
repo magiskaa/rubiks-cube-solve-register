@@ -16,12 +16,33 @@ public class Ratkaisut {
      * oletusmuodostaja
      */
     public Ratkaisut() {
-        // ni
+        // ei vielä
     }
     
     /**
+     * lisää ratkaisun listaan
      * @param ratkaisu ratkaisu
-     * @throws SailoException virhe
+     * @throws SailoException virhe jos liikaa alkioita (>1000)
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException 
+     * Ratkaisut ratkaisut = new Ratkaisut();
+     * Ratkaisu eka = new Ratkaisu(), toka = new Ratkaisu();
+     * ratkaisut.getLkm() === 0;
+     * ratkaisut.lisaa(eka); ratkaisut.getLkm() === 1;
+     * ratkaisut.lisaa(toka); ratkaisut.getLkm() === 2;
+     * ratkaisut.lisaa(eka); ratkaisut.getLkm() === 3;
+     * ratkaisut.anna(0) === eka;
+     * ratkaisut.anna(1) === toka;
+     * ratkaisut.anna(2) === eka;
+     * ratkaisut.anna(1) == eka === false;
+     * ratkaisut.anna(1) == toka === true;
+     * ratkaisut.anna(3) === eka; #THROWS IndexOutOfBoundsException 
+     * ratkaisut.lisaa(eka); ratkaisut.getLkm() === 4;
+     * ratkaisut.lisaa(eka); ratkaisut.getLkm() === 5;
+     * ratkaisut.lisaa(eka);  #THROWS SailoException
+     * </pre>
+
      */
     public void lisaa(Ratkaisu ratkaisu) throws SailoException {
         if (lkm >= alkiot.length) throw new SailoException("Liikaa alkioita");
@@ -30,6 +51,7 @@ public class Ratkaisut {
     }
     
     /**
+     * palauttaa indeksissä olevan ratkaisun
      * @param i indeksi
      * @return ratkaisu
      * @throws IndexOutOfBoundsException indeksi yli rajojen
@@ -40,9 +62,9 @@ public class Ratkaisut {
     }
     
     /**
-     * 
+     * lukee tiedostosta 
      * @param hakemisto hakemisto
-     * @throws SailoException virhe
+     * @throws SailoException ei vielä osata lukea tiedostosta
      */
     public void lueTiedostosta(String hakemisto) throws SailoException {
         tiedostonNimi = hakemisto + "/ratkaisut.dat";
@@ -51,13 +73,14 @@ public class Ratkaisut {
     
     /**
      * Tallentaa tiedostoon
-     * @throws SailoException virhe
+     * @throws SailoException ei vielä osata tallettaa tiedostoa
      */
     public void talleta() throws SailoException {
         throw new SailoException("Ei osata vielä tallettaa tiedostoa " + tiedostonNimi);
     }
 
     /**
+     * palauttaa ratkaisujen lukumäärän
      * @return lkm
      */
     public int getLkm() {

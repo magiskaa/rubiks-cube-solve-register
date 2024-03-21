@@ -39,8 +39,9 @@ public class RubikinkuutioGUIController implements Initializable {
     @FXML private ScrollPane panelRatkaisu;
     
     /**
-     * @param url ni
-     * @param bundle ni
+     * alustus
+     * @param url url
+     * @param bundle bundle
      */
     @Override
     public void initialize(URL url, ResourceBundle bundle) {    
@@ -83,20 +84,6 @@ public class RubikinkuutioGUIController implements Initializable {
     }
     
     
-    //@Override
-    //public void start(Stage primaryStage) {
-    //    try {
-    //        AnchorPane root = (AnchorPane)FXMLLoader.load(getClass().getResource("RubikinkuutioLisaaView.fxml"));
-    //        Scene scene = new Scene(root,350,500);
-    //        scene.getStylesheets().add(getClass().getResource("rubikinkuutio.css").toExternalForm());
-    //        primaryStage.setScene(scene);
-    //        primaryStage.show();
-    //    } catch(Exception e) {
-    //        e.printStackTrace();
-    //    }
-    //}
-    
-    
     //========= EI KÄYTTÖLIITTYMÄÄN LIITTYVÄÄ KOODIA =========
     
     private Rekisteri rekisteri;
@@ -105,7 +92,7 @@ public class RubikinkuutioGUIController implements Initializable {
     
     
     /**
-     * 
+     * alustus
      */
     protected void alusta() {
         panelRatkaisu.setContent(areaRatkaisu);
@@ -118,7 +105,7 @@ public class RubikinkuutioGUIController implements Initializable {
     
     
     /**
-     * 
+     * näyttää valitun ratkaisun sekä mahdollisen sekoituksen tekstialueella
      */
     protected void naytaRatkaisu() {
         ratkaisuKohdalla = chooserRatkaisut.getSelectedObject();
@@ -134,6 +121,7 @@ public class RubikinkuutioGUIController implements Initializable {
     
     
     /**
+     * hakee ratkaisun ja lisää sen käyttöliittymän listaan
      * @param id id
      */
     protected void hae(int id) {
@@ -149,7 +137,7 @@ public class RubikinkuutioGUIController implements Initializable {
     }
     
     /**
-     * 
+     * lisää ratkaisun rekisteriin ja kutsuu hae-aliohjelmaa
      */
     protected void lisaaRatkaisu() {
         Ratkaisu uusi = new Ratkaisu();
@@ -165,7 +153,7 @@ public class RubikinkuutioGUIController implements Initializable {
     }
     
     /**
-     * 
+     * lisää sekoituksen rekisteriin
      */
     public void lisaaSekoitus() {
         if (ratkaisuKohdalla == null) return;
@@ -177,8 +165,9 @@ public class RubikinkuutioGUIController implements Initializable {
     }
     
     /**
-     * @param os mikä virta
-     * @param ratkaisu mikä ratkaisu
+     * tulostaa tekstialueelle ratkaisun ja sekoituksen
+     * @param os mikä tietovirta
+     * @param ratkaisu ratkaisu
      */
     public void tulosta(PrintStream os, final Ratkaisu ratkaisu) {
         os.println("-------------------------------------------");
@@ -191,7 +180,8 @@ public class RubikinkuutioGUIController implements Initializable {
     
     
     /**
-     * @param rekisteri ni
+     * tekee rekisterin
+     * @param rekisteri rekisteri
      */
     public void setRekisteri(Rekisteri rekisteri) {
         this.rekisteri = rekisteri;

@@ -13,6 +13,7 @@ public class Rekisteri {
     private final Sekoitukset sekoitukset = new Sekoitukset();
     
     /**
+     * palauttaa montako ratkaisua on
      * @return lkm
      */
     public int getRatkaisuja() {
@@ -20,7 +21,8 @@ public class Rekisteri {
     }
     
     /**
-     * @param nro numero
+     * poistaa ratkaisun
+     * @param nro ratkaisun id
      * @return poistettujen määrä
      */
     public int poista(@SuppressWarnings("unused") int nro) {
@@ -28,14 +30,36 @@ public class Rekisteri {
     }
     
     /**
+     * lisaa ratkaisun
      * @param ratkaisu ratkaisu
-     * @throws SailoException ni
+     * @throws SailoException virhe jos lisääminen ei onnistu
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException
+     * Rekisteri rekisteri = new Rekisteri();
+     * Ratkaisu eka = new Ratkaisu(), toka = new Ratkaisu();
+     * eka.rekisteroi(); toka.rekisteroi();
+     * rekisteri.getRatkaisuja() === 0;
+     * rekisteri.lisaa(eka); rekisteri.getRatkaisuja() === 1;
+     * rekisteri.lisaa(toka); rekisteri.getRatkaisuja() === 2;
+     * rekisteri.lisaa(eka); rekisteri.getRatkaisuja() === 3;
+     * rekisteri.getRatkaisuja() === 3;
+     * rekisteri.annaRatkaisu(0) === eka;
+     * rekisteri.annaRatkaisu(1) === toka;
+     * rekisteri.annaRatkaisu(2) === eka;
+     * rekisteri.annaRatkaisu(3) === eka; #THROWS IndexOutOfBoundsException 
+     * rekisteri.lisaa(eka); rekisteri.getRatkaisuja() === 4;
+     * rekisteri.lisaa(eka); rekisteri.getRatkaisuja() === 5;
+     * rekisteri.lisaa(eka);            #THROWS SailoException
+     * </pre>
+
      */
     public void lisaa(Ratkaisu ratkaisu) throws SailoException {
         ratkaisut.lisaa(ratkaisu);
     }
     
     /**
+     * lisää sekoituksen
      * @param sek sekoitus
      */
     public void lisaa(Sekoitus sek) {
@@ -43,17 +67,19 @@ public class Rekisteri {
     }
     
     /**
+     * palauttaa viitteen ratkaisuun indeksissä i
      * @param i indeksi
      * @return viite
-     * @throws IndexOutOfBoundsException virhe
+     * @throws IndexOutOfBoundsException virhe jos indeksi on yli rajojen
      */
     public Ratkaisu annaRatkaisu(int i) throws IndexOutOfBoundsException {
         return ratkaisut.anna(i);
     }
     
     /**
+     * palauttaa viitteen ratkaisuun liittyvään sekoitukseen
      * @param ratkaisu ratkaisu
-     * @return ni
+     * @return viite sekoitukseen
      */
     public List<Sekoitus> annaSekoitukset(Ratkaisu ratkaisu) {
         return sekoitukset.annaSekoitukset(ratkaisu.getId());   
@@ -61,7 +87,7 @@ public class Rekisteri {
     
     /**
      * Lukee tiedot
-     * @param nimi jota käyteään lukemisessa
+     * @param nimi jota käytetään lukemisessa
      * @throws SailoException jos lukeminen epäonnistuu
      */
     public void lueTiedostosta(String nimi) throws SailoException {
