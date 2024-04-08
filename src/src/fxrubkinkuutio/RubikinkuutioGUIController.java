@@ -62,7 +62,7 @@ public class RubikinkuutioGUIController implements Initializable {
         lisaaRatkaisu();
     }
     
-    @FXML private void handleLisaaSekoitus() {
+    @FXML private void handleLisaaSekoitus() throws SailoException {
         //ModalController.showModal(RubikinkuutioGUIController.class.getResource("RubikinkuutioLisaaSekoitusView.fxml"), null,null,null);
         lisaaSekoitus();
     }
@@ -100,14 +100,38 @@ public class RubikinkuutioGUIController implements Initializable {
         panelRatkaisu.setFitToHeight(true);
         
         chooserRatkaisut.clear();
-        chooserRatkaisut.addSelectionListener(e -> naytaRatkaisu());
+        chooserRatkaisut.addSelectionListener(e -> {
+            try {
+                naytaRatkaisu();
+            } catch (SailoException e1) {
+                e1.printStackTrace();
+            }
+        });
     }
     
     
     /**
-     * näyttää valitun ratkaisun sekä mahdollisen sekoituksen tekstialueella
+     * @param nimi tiedoston nimi
+     * @return null tai virhe
      */
-    protected void naytaRatkaisu() {
+    public String lueTiedosto(String nimi) {
+        try {
+            rekisteri.lueTiedostosta(nimi);
+            hae(0);
+            return null;
+        } catch ( SailoException e) {
+            hae(0);
+            String virhe = e.getMessage();
+            if (virhe != null) Dialogs.showMessageDialog(virhe);
+            return virhe;
+        }
+    }
+    
+    /**
+     * näyttää valitun ratkaisun sekä mahdollisen sekoituksen tekstialueella
+     * @throws SailoException virhe
+     */
+    protected void naytaRatkaisu() throws SailoException {
         ratkaisuKohdalla = chooserRatkaisut.getSelectedObject();
         
         if (ratkaisuKohdalla == null) return;
@@ -131,7 +155,8 @@ public class RubikinkuutioGUIController implements Initializable {
         for (int i = 0; i < rekisteri.getRatkaisuja(); i++) {
             Ratkaisu ratkaisu = rekisteri.annaRatkaisu(i);
             if (ratkaisu.getId() == id) index = i;
-            chooserRatkaisut.add(ratkaisu.getAika(), ratkaisu);
+            String listassa = ratkaisu.getId() + "  |  " + ratkaisu.getAika() + "  |  " + ratkaisu.getPvm();
+            chooserRatkaisut.add(listassa, ratkaisu);
         }
         chooserRatkaisut.setSelectedIndex(index);
     }
@@ -154,8 +179,9 @@ public class RubikinkuutioGUIController implements Initializable {
     
     /**
      * lisää sekoituksen rekisteriin
+     * @throws SailoException virhe
      */
-    public void lisaaSekoitus() {
+    public void lisaaSekoitus() throws SailoException {
         if (ratkaisuKohdalla == null) return;
         Sekoitus sek = new Sekoitus();
         sek.rekisteroi();
@@ -168,8 +194,9 @@ public class RubikinkuutioGUIController implements Initializable {
      * tulostaa tekstialueelle ratkaisun ja sekoituksen
      * @param os mikä tietovirta
      * @param ratkaisu ratkaisu
+     * @throws SailoException virhe
      */
-    public void tulosta(PrintStream os, final Ratkaisu ratkaisu) {
+    public void tulosta(PrintStream os, final Ratkaisu ratkaisu) throws SailoException {
         os.println("-------------------------------------------");
         ratkaisu.tulosta(os);
         os.println("-------------------------------------------");
@@ -182,8 +209,9 @@ public class RubikinkuutioGUIController implements Initializable {
     /**
      * tekee rekisterin
      * @param rekisteri rekisteri
+     * @throws SailoException virhe
      */
-    public void setRekisteri(Rekisteri rekisteri) {
+    public void setRekisteri(Rekisteri rekisteri) throws SailoException {
         this.rekisteri = rekisteri;
         naytaRatkaisu();
     } 

@@ -1,5 +1,10 @@
 package fxrubkinkuutio;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 /**
  * Ratkaisut
  * @author Valtteri
@@ -11,6 +16,7 @@ public class Ratkaisut {
     private int lkm = 0;
     private String tiedostonNimi = "";
     private Ratkaisu alkiot[] = new Ratkaisu[MAX_RATKAISUJA];
+    private boolean muutettu = false;
     
     /**
      * oletusmuodostaja
@@ -48,6 +54,7 @@ public class Ratkaisut {
         if (lkm >= alkiot.length) throw new SailoException("Liikaa alkioita");
         alkiot[lkm] = ratkaisu;
         lkm++;
+        muutettu = true;
     }
     
     /**
@@ -63,12 +70,33 @@ public class Ratkaisut {
     
     /**
      * lukee tiedostosta 
-     * @param hakemisto hakemisto
-     * @throws SailoException ei vielä osata lukea tiedostosta
+     * @param tied tiedosto
+     * @throws SailoException virhe
      */
-    public void lueTiedostosta(String hakemisto) throws SailoException {
-        tiedostonNimi = hakemisto + "/ratkaisut.dat";
-        throw new SailoException("Ei vielä osata lukea tiedostoa " + tiedostonNimi);
+    public void lueTiedostosta(String tied) throws SailoException {
+        setTiedostonNimi(tied);
+        try ( BufferedReader fi = new BufferedReader(new FileReader(getTiedostonNimi()))) {
+            String rivi = fi.readLine();
+            while ((rivi = fi.readLine()) != null) {
+                rivi.trim();
+                if ("".equals(rivi) || rivi.charAt(0) == ';') continue;
+                Ratkaisu ratkaisu = new Ratkaisu();
+                ratkaisu.parse(rivi);
+                lisaa(ratkaisu);
+            }
+            muutettu = false;
+        } catch ( FileNotFoundException e) {
+            throw new SailoException("Tiedosto " + getTiedostonNimi() + " ei aukea");
+        } catch ( IOException e) {
+            throw new SailoException("Ongelmia tiedoston kanssa: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * @throws SailoException virhe
+     */
+    public void lueTiedostosta() throws SailoException {
+        lueTiedostosta(getTiedostonPerusNimi());
     }
     
     /**
@@ -79,6 +107,28 @@ public class Ratkaisut {
         throw new SailoException("Ei osata vielä tallettaa tiedostoa " + tiedostonNimi);
     }
 
+    
+    /**
+     * @return tiedoston nimi + .dat
+     */
+    public String getTiedostonNimi() {
+        return tiedostonNimi + ".dat";
+    }
+    
+    /**
+     * @return tiedoston nimi
+     */
+    public String getTiedostonPerusNimi() {
+        return tiedostonNimi;
+    }
+    
+    /**
+     * @param tied tiedosto
+     */
+    public void setTiedostonNimi(String tied) {
+        tiedostonNimi = tied;
+    }
+    
     /**
      * palauttaa ratkaisujen lukumäärän
      * @return lkm

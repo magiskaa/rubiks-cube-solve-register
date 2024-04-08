@@ -1,5 +1,6 @@
 package fxrubkinkuutio;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -9,8 +10,8 @@ import java.util.List;
  *
  */
 public class Rekisteri {
-    private final Ratkaisut ratkaisut = new Ratkaisut();
-    private final Sekoitukset sekoitukset = new Sekoitukset();
+    private Ratkaisut ratkaisut = new Ratkaisut();
+    private Sekoitukset sekoitukset = new Sekoitukset();
     
     /**
      * palauttaa montako ratkaisua on
@@ -61,8 +62,9 @@ public class Rekisteri {
     /**
      * lisää sekoituksen
      * @param sek sekoitus
+     * @throws SailoException virhe
      */
-    public void lisaa(Sekoitus sek) {
+    public void lisaa(Sekoitus sek) throws SailoException {
         sekoitukset.lisaa(sek);
     }
     
@@ -80,9 +82,22 @@ public class Rekisteri {
      * palauttaa viitteen ratkaisuun liittyvään sekoitukseen
      * @param ratkaisu ratkaisu
      * @return viite sekoitukseen
+     * @throws SailoException virhe
      */
-    public List<Sekoitus> annaSekoitukset(Ratkaisu ratkaisu) {
-        return sekoitukset.annaSekoitukset(ratkaisu.getId());   
+    public List<Sekoitus> annaSekoitukset(Ratkaisu ratkaisu) throws SailoException {
+        return sekoitukset.annaSekoitukset(ratkaisu.getSekoitusId());   
+    }
+    
+    /**
+     * @param nimi nimi
+     */
+    public void setTiedosto(String nimi) {
+        File dir = new File(nimi);
+        dir.mkdirs();
+        String hakemistonNimi = "";
+        if (!nimi.isEmpty()) hakemistonNimi = nimi + "/";
+        ratkaisut.setTiedostonNimi(hakemistonNimi + "ratkaisut");
+        sekoitukset.setTiedostonNimi(hakemistonNimi + "sekoitukset");
     }
     
     /**
@@ -91,7 +106,12 @@ public class Rekisteri {
      * @throws SailoException jos lukeminen epäonnistuu
      */
     public void lueTiedostosta(String nimi) throws SailoException {
-        ratkaisut.lueTiedostosta(nimi);
+        ratkaisut = new Ratkaisut();
+        sekoitukset = new Sekoitukset();
+        
+        setTiedosto(nimi); 
+        ratkaisut.lueTiedostosta();
+        sekoitukset.lueTiedostosta();
     }
 
     /**

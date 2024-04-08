@@ -3,6 +3,8 @@ package fxrubkinkuutio;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import fi.jyu.mit.ohj2.Mjonot;
+
 /**
  * @author Valtteri
  * @version 20.3.2024
@@ -12,7 +14,7 @@ public class Sekoitus {
     private int id;
     private int ratkaisuId;
     private String sekoitus;
-    private static int seuraavaNro = 1;
+    private static int seuraavaId = 1;
     
     /**
      * muodostaja
@@ -43,7 +45,7 @@ public class Sekoitus {
      * @param out mikä tietovirta
      */
     public void tulosta(PrintStream out) {
-        out.println(sekoitus);
+        out.println("Sekoitus: " + sekoitus);
     }
     
     /**
@@ -71,8 +73,8 @@ public class Sekoitus {
 
      */
     public int rekisteroi() {
-        id = seuraavaNro;
-        seuraavaNro++;
+        id = seuraavaId;
+        seuraavaId++;
         return id;
     }
     
@@ -93,6 +95,19 @@ public class Sekoitus {
     }
     
     /**
+     * @param nr numero
+     */
+    public void setId(int nr) {
+        id = nr;
+        if (id >= seuraavaId) seuraavaId = id + 1;
+    }
+    
+    @Override
+    public String toString() {
+        return "" + getId() + "|" + sekoitus + "|";
+    }
+    
+    /**
      * palauttaa sekoituksen
      * @return sekoitus
      */
@@ -101,11 +116,32 @@ public class Sekoitus {
     }
     
     /**
+     * @param rivi tiedoston rivi jossa on dataa
+     */
+    public void parse(String rivi) {
+        StringBuilder sb = new StringBuilder(rivi);
+        setId(Mjonot.erota(sb, '|', getId()));
+        sekoitus = Mjonot.erota(sb, '|', sekoitus);
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if ( obj == null ) return false;
+        return this.toString().equals(obj.toString());
+    }
+    
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+    
+    /**
      * @param args ei
      */
     public static void main(String[] args) {
         Sekoitus sek = new Sekoitus();
-        sek.testiArvot(seuraavaNro);
+        sek.testiArvot(seuraavaId);
         sek.tulosta(System.out);
     }
     

@@ -2,6 +2,8 @@ package fxrubkinkuutio;
 
 import java.io.*;
 
+import fi.jyu.mit.ohj2.Mjonot;
+
 /**
  * Ratkaisu
  * @author Valtteri
@@ -13,8 +15,9 @@ public class Ratkaisu {
     private String aika = " ";
     private String pvm = " ";
     private String kellonaika = " ";
-    private boolean dnf = false;
-    private boolean kaksiS = false;
+    private String dnf = "F";
+    private String kaksiS = "F";
+    private int sekoitusId = 1;
     private static int seuraavaId = 1;
     
     /**
@@ -24,8 +27,9 @@ public class Ratkaisu {
         aika = "00;24,284";
         pvm = "18.3.2024";
         kellonaika = "15:54";
-        dnf = false;
-        kaksiS = true;
+        dnf = "F";
+        kaksiS = "T";
+        sekoitusId = 1;
     }
     
     
@@ -36,8 +40,9 @@ public class Ratkaisu {
         aika = "00;17,478";
         pvm = "19.3.2024";
         kellonaika = "18:51";
-        dnf = false;
-        kaksiS = false;
+        dnf = "F";
+        kaksiS = "F";
+        sekoitusId = 2;
     }
     
     /**
@@ -45,11 +50,12 @@ public class Ratkaisu {
      * @param out ps
      */
     public void tulosta(PrintStream out) {
-        out.println(id + " | " + aika);
-        out.println(pvm + " | " + kellonaika);
+        out.println("Nro: " + id);
+        out.println("Aika: " + aika);
+        out.println("Päivämäärä: " + pvm);
+        out.println("Kellonaika: " + kellonaika);
         out.println("DNF: " + dnf);
         out.println("+2s: " + kaksiS);
-        out.println();
     }
     
     /**
@@ -91,6 +97,21 @@ public class Ratkaisu {
     }
     
     /**
+     * @param nr numero
+     */
+    public void setId(int nr) {
+        id = nr;
+        if (id >= seuraavaId) seuraavaId = id + 1;
+    }
+    
+    /**
+     * @return sekoitus id
+     */
+    public int getSekoitusId() {
+        return sekoitusId;
+    }
+    
+    /**
      * palauttaa ratkaisun ajan
      * @return aika
      * @example
@@ -99,11 +120,49 @@ public class Ratkaisu {
      *   eka.testiArvot();
      *   aku.getAika() === "15:54";
      * </pre>
-
      */
     public String getAika() {
         return aika;
     }
+    
+    /**
+     * @return pvm
+     */
+    public String getPvm() {
+        return pvm;
+    }
+    
+    @Override
+    public String toString() {
+        return "" + getId() + "|" + aika + "|" + pvm + "|" + kellonaika + "|" + dnf + "|" + kaksiS + "|" + sekoitusId;
+    }
+    
+    /**
+     * @param rivi tiedostosta luettu rivi
+     */
+    public void parse(String rivi) {
+        StringBuilder sb = new StringBuilder(rivi);
+        setId(Mjonot.erota(sb, '|', getId()));
+        aika = Mjonot.erota(sb, '|', aika);
+        pvm = Mjonot.erota(sb, '|', pvm);
+        kellonaika = Mjonot.erota(sb, '|', kellonaika);
+        dnf = Mjonot.erota(sb, '|', dnf);
+        kaksiS = Mjonot.erota(sb, '|', kaksiS);
+        sekoitusId = Mjonot.erota(sb, '|', sekoitusId);
+    }
+    
+    @Override
+    public boolean equals(Object jasen) {
+        if ( jasen == null ) return false;
+        return this.toString().equals(jasen.toString());
+    }
+
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
     
     /**
      * @param args ei

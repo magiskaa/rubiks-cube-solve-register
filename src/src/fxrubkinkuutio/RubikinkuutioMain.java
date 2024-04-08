@@ -30,6 +30,8 @@ public class RubikinkuutioMain extends Application {
 			rekisteriCtrl.setRekisteri(rekisteri);
 			primaryStage.show();
 			
+			rekisteriCtrl.lueTiedosto("data");
+			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

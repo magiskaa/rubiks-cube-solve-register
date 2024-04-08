@@ -1,5 +1,9 @@
-package fxrubkinkuutio;
+    package fxrubkinkuutio;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +13,9 @@ import java.util.List;
  *
  */
 public class Sekoitukset {
+    private boolean muutettu = false;
+    private String tiedostonNimi = "";
+    
     private final List<Sekoitus> alkiot = new ArrayList<Sekoitus>();
     
     /**
@@ -17,6 +24,59 @@ public class Sekoitukset {
      */
     public void lisaa(Sekoitus sek) {
         alkiot.add(sek);
+        muutettu = true;
+    }
+    
+    
+    /**
+     * @param tied tiedosto josta luetaan
+     * @throws SailoException virhe
+     */
+    public void lueTiedostosta(String tied) throws SailoException {
+        setTiedostonNimi(tied);
+        try (BufferedReader fi = new BufferedReader(new FileReader(getTiedostonNimi()))) {
+            String rivi;
+            while ((rivi = fi.readLine()) != null) {
+                rivi = rivi.trim();
+                if ("".equals(rivi) || rivi.charAt(0) == ';') continue;
+                Sekoitus sek = new Sekoitus();
+                sek.parse(rivi);
+                lisaa(sek);
+            }
+            muutettu = false;
+        } catch ( FileNotFoundException e ) {
+            throw new SailoException("Tiedosto " + getTiedostonNimi() + " ei aukea");
+        } catch ( IOException e ) {
+            throw new SailoException("Ongelmia tiedoston kanssa: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * @throws SailoException virhe
+     */
+    public void lueTiedostosta() throws SailoException {
+        lueTiedostosta(getTiedostonPerusNimi());
+    }
+    
+    /**
+     * @return tiedoston nimi + .dat
+     */
+    public String getTiedostonNimi() {
+        return tiedostonNimi + ".dat";
+    }
+    
+    /**
+     * @return tiedoston nimi
+     */
+    public String getTiedostonPerusNimi() {
+        return tiedostonNimi;
+    }
+    
+    /**
+     * @param tied tiedoston nimi
+     */
+    public void setTiedostonNimi(String tied) {
+        tiedostonNimi = tied;
     }
     
     /**
@@ -49,7 +109,7 @@ public class Sekoitukset {
     public List<Sekoitus> annaSekoitukset(int tunnusnro) {
         List<Sekoitus> loydetyt = new ArrayList<Sekoitus>();
         for (Sekoitus sek : alkiot) {
-            if (sek.getRatkaisuId() == tunnusnro) loydetyt.add(sek);
+            if (sek.getId() == tunnusnro) loydetyt.add(sek);
         }
         return loydetyt;
     }
