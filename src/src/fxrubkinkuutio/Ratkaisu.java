@@ -97,6 +97,7 @@ public class Ratkaisu {
     }
     
     /**
+     * asettaa ratkaisun id:n
      * @param nr numero
      */
     public void setId(int nr) {
@@ -105,6 +106,7 @@ public class Ratkaisu {
     }
     
     /**
+     * palauttaa sekoituksen id:n
      * @return sekoitus id
      */
     public int getSekoitusId() {
@@ -126,6 +128,7 @@ public class Ratkaisu {
     }
     
     /**
+     * palauttaa ratkaisun päivämäärän
      * @return pvm
      */
     public String getPvm() {
@@ -138,6 +141,7 @@ public class Ratkaisu {
     }
     
     /**
+     * erottaa tiedoston rivistä kaikki kohdat omiin muuttujiin
      * @param rivi tiedostosta luettu rivi
      */
     public void parse(String rivi) {

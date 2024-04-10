@@ -89,6 +89,7 @@ public class Rekisteri {
     }
     
     /**
+     * asettaa tiedostojen nimet
      * @param nimi nimi
      */
     public void setTiedosto(String nimi) {
@@ -115,11 +116,23 @@ public class Rekisteri {
     }
 
     /**
-     * Tallettaa tiedot
-     * @throws SailoException jos tallettamisessa ongelmia
+     * välittää tallennukset ratkaisuihin ja sekoituksiin
+     * @throws SailoException virhe
      */
-    public void talleta() throws SailoException {
-        ratkaisut.talleta();
+    public void tallenna() throws SailoException {
+        String virhe = "";
+        try {
+            ratkaisut.tallenna();
+        } catch (SailoException e) {
+            virhe = e.getMessage();
+        }
+        
+        try {
+            sekoitukset.tallenna();
+        } catch (SailoException e) {
+            virhe += e.getMessage();
+        }
+        if (!"".equals(virhe)) throw new SailoException(virhe);
     }
 
     /**

@@ -1,10 +1,14 @@
-    package fxrubkinkuutio;
+package fxrubkinkuutio;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -12,7 +16,7 @@ import java.util.List;
  * @version 20.3.2024
  *
  */
-public class Sekoitukset {
+public class Sekoitukset implements Iterable<Sekoitus> {
     private boolean muutettu = false;
     private String tiedostonNimi = "";
     
@@ -29,6 +33,7 @@ public class Sekoitukset {
     
     
     /**
+     * lukee tiedostosta
      * @param tied tiedosto josta luetaan
      * @throws SailoException virhe
      */
@@ -52,6 +57,7 @@ public class Sekoitukset {
     }
     
     /**
+     * lukee tiedostosta
      * @throws SailoException virhe
      */
     public void lueTiedostosta() throws SailoException {
@@ -59,6 +65,31 @@ public class Sekoitukset {
     }
     
     /**
+     * tallentaa tiedostoon muutokset
+     * @throws SailoException virhe
+     */
+    public void tallenna() throws SailoException {
+        if (!muutettu) return;
+        
+        File fbak = new File(getBakNimi());
+        File ftied = new File(getTiedostonNimi());
+        fbak.delete();
+        ftied.renameTo(fbak);
+        
+        try ( PrintWriter fo = new PrintWriter(new FileWriter(ftied.getCanonicalPath()))) { 
+            for (Sekoitus sek : this) {
+                fo.println(sek.toString());
+            }
+        } catch (FileNotFoundException e) {
+            throw new SailoException("Tiedosto " + ftied.getName() + " ei aukea");
+        } catch (IOException e) {
+            throw new SailoException("Tiedoston " + ftied.getName() + " kirjoittamisessa ongelmia");
+        }
+        muutettu = false;
+    }
+    
+    /**
+     * palauttaa tiedoston nimen
      * @return tiedoston nimi + .dat
      */
     public String getTiedostonNimi() {
@@ -66,6 +97,7 @@ public class Sekoitukset {
     }
     
     /**
+     * palauttaa tiedoston nimen
      * @return tiedoston nimi
      */
     public String getTiedostonPerusNimi() {
@@ -73,11 +105,27 @@ public class Sekoitukset {
     }
     
     /**
+     * asettaa tiedoston nimen
      * @param tied tiedoston nimi
      */
     public void setTiedostonNimi(String tied) {
         tiedostonNimi = tied;
     }
+    
+    /**
+     * palauttaa tiedoston bak nimen
+     * @return tiedoston nimi + .bak
+     */
+    public String getBakNimi() {
+        return tiedostonNimi + ".bak";
+    }
+    
+    
+    @Override
+    public Iterator<Sekoitus> iterator() {
+        return alkiot.iterator();
+    }
+
     
     /**
      * palauttaa ratkaisuun liittyvän sekoituksen

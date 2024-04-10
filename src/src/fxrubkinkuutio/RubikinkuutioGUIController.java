@@ -1,8 +1,6 @@
 package fxrubkinkuutio;
 
 import java.io.PrintStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -10,17 +8,12 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
-import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 import javafx.scene.text.Font;
 import fi.jyu.mit.fxgui.*;
 
-import javafx.application.Application;
 import javafx.application.Platform;
 
 /**
@@ -50,11 +43,13 @@ public class RubikinkuutioGUIController implements Initializable {
 
     
     @FXML private void handleLopeta() {
+        tallenna();
         Platform.exit();
     }
     
     @FXML private void handleTallenna() {
-        Dialogs.showMessageDialog("Ei vielä toimi");
+        tallenna();
+        Dialogs.showMessageDialog("Tallennettu!");
     }
     
     @FXML private void handleLisaa() {
@@ -124,6 +119,20 @@ public class RubikinkuutioGUIController implements Initializable {
             String virhe = e.getMessage();
             if (virhe != null) Dialogs.showMessageDialog(virhe);
             return virhe;
+        }
+    }
+    
+    /**
+     * välittää tallennuksen rekisterille
+     * @return null tai virhe
+     */
+    public String tallenna() {
+        try {
+            rekisteri.tallenna();
+            return null;
+        } catch ( SailoException e) {
+            Dialogs.showMessageDialog("Tallennuksessa ongelmia " + e.getMessage());
+            return e.getMessage();
         }
     }
     

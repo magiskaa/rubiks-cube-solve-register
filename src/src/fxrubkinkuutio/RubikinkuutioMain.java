@@ -16,7 +16,6 @@ public class RubikinkuutioMain extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-		    
 		    final FXMLLoader ldr = new FXMLLoader(getClass().getResource("RubikinkuutioGUIView.fxml"));
 		    final Pane root = (Pane)ldr.load();
 		    final RubikinkuutioGUIController rekisteriCtrl = (RubikinkuutioGUIController)ldr.getController();

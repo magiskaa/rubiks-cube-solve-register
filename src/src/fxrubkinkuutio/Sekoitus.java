@@ -70,7 +70,6 @@ public class Sekoitus {
      *   int n2 = sek2.getId();
      *   n1 === n2-1;
      * </pre>
-
      */
     public int rekisteroi() {
         id = seuraavaId;
@@ -95,6 +94,7 @@ public class Sekoitus {
     }
     
     /**
+     * asettaa id:n
      * @param nr numero
      */
     public void setId(int nr) {
@@ -116,6 +116,7 @@ public class Sekoitus {
     }
     
     /**
+     * erottaa tiedoston rivistä kaikki omiin muuttujiin
      * @param rivi tiedoston rivi jossa on dataa
      */
     public void parse(String rivi) {

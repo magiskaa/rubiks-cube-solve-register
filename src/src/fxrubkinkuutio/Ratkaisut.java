@@ -1,9 +1,14 @@
 package fxrubkinkuutio;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Ratkaisut
@@ -11,10 +16,10 @@ import java.io.IOException;
  * @version 18.3.2024
  *
  */
-public class Ratkaisut {
+public class Ratkaisut implements Iterable<Ratkaisu> {
     private static final int MAX_RATKAISUJA = 1000;
     private int lkm = 0;
-    private String tiedostonNimi = "";
+    private String tiedostonNimi = "ratkaisut";
     private Ratkaisu alkiot[] = new Ratkaisu[MAX_RATKAISUJA];
     private boolean muutettu = false;
     
@@ -48,7 +53,6 @@ public class Ratkaisut {
      * ratkaisut.lisaa(eka); ratkaisut.getLkm() === 5;
      * ratkaisut.lisaa(eka);  #THROWS SailoException
      * </pre>
-
      */
     public void lisaa(Ratkaisu ratkaisu) throws SailoException {
         if (lkm >= alkiot.length) throw new SailoException("Liikaa alkioita");
@@ -93,6 +97,7 @@ public class Ratkaisut {
     }
     
     /**
+     * lukee tiedostosta
      * @throws SailoException virhe
      */
     public void lueTiedostosta() throws SailoException {
@@ -103,12 +108,30 @@ public class Ratkaisut {
      * Tallentaa tiedostoon
      * @throws SailoException ei vielä osata tallettaa tiedostoa
      */
-    public void talleta() throws SailoException {
-        throw new SailoException("Ei osata vielä tallettaa tiedostoa " + tiedostonNimi);
+    public void tallenna() throws SailoException {
+        if (!muutettu) return;
+        
+        File fbak = new File(getBakNimi());
+        File ftied = new File(getTiedostonNimi());
+        fbak.delete();
+        ftied.renameTo(fbak);
+        
+        try (PrintWriter fo = new PrintWriter(new FileWriter(ftied.getCanonicalPath()))) {
+            fo.println(alkiot.length);
+            for (Ratkaisu ratkaisu : this) {
+                fo.println(ratkaisu.toString());
+            }
+        } catch (FileNotFoundException e) {
+            throw new SailoException("Tiedosto " + ftied.getName() + " ei aukea");
+        } catch (IOException e) {
+            throw new SailoException("Tiedoston " + ftied.getName() + " kirjoittamisessa ongelmia");
+        }
+        muutettu = false;
     }
 
     
     /**
+     * palauttaa tiedoston nimen
      * @return tiedoston nimi + .dat
      */
     public String getTiedostonNimi() {
@@ -116,6 +139,7 @@ public class Ratkaisut {
     }
     
     /**
+     * palauttaa tiedoston nimen
      * @return tiedoston nimi
      */
     public String getTiedostonPerusNimi() {
@@ -123,10 +147,19 @@ public class Ratkaisut {
     }
     
     /**
+     * asettaa tiedoston nimen
      * @param tied tiedosto
      */
     public void setTiedostonNimi(String tied) {
         tiedostonNimi = tied;
+    }
+    
+    /**
+     * palauttaa tiedoston bak nimen
+     * @return tiedoston nimi + .bak
+     */
+    public String getBakNimi() {
+        return tiedostonNimi + ".bak";
     }
     
     /**
@@ -135,6 +168,56 @@ public class Ratkaisut {
      */
     public int getLkm() {
         return lkm;
+    }
+    
+    /**
+     * @author Valtteri
+     * @version 9.4.2024
+     *
+     */
+    public class RatkaisutIterator implements Iterator<Ratkaisu> {
+        private int kohdalla = 0;
+
+
+        /**
+         * Onko olemassa vielä seuraavaa jäsentä
+         * @see java.util.Iterator#hasNext()
+         * @return true jos on vielä jäseniä
+         */
+        @Override
+        public boolean hasNext() {
+            return kohdalla < getLkm();
+        }
+
+
+        /**
+         * Annetaan seuraava jäsen
+         * @return seuraava jäsen
+         * @throws NoSuchElementException jos seuraava alkiota ei enää ole
+         * @see java.util.Iterator#next()
+         */
+        @Override
+        public Ratkaisu next() throws NoSuchElementException {
+            if ( !hasNext() ) throw new NoSuchElementException("Ei oo");
+            return anna(kohdalla++);
+        }
+
+
+        /**
+         * Tuhoamista ei ole toteutettu
+         * @throws UnsupportedOperationException aina
+         * @see java.util.Iterator#remove()
+         */
+        @Override
+        public void remove() throws UnsupportedOperationException {
+            throw new UnsupportedOperationException("Me ei poisteta");
+        }
+    }
+
+    
+    @Override
+    public Iterator<Ratkaisu> iterator() {
+        return new RatkaisutIterator();
     }
     
     /**
@@ -164,5 +247,4 @@ public class Ratkaisut {
             System.out.println(ex.getMessage());
         }
     }
-    
 }
