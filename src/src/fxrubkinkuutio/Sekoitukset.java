@@ -31,6 +31,47 @@ public class Sekoitukset implements Iterable<Sekoitus> {
         muutettu = true;
     }
     
+    /**
+     * Korvaa harrastuksen tietorakenteessa.  Ottaa harrastuksen omistukseensa.
+     * Etsitään samalla tunnusnumerolla oleva harrastus.  Jos ei löydy,
+     * niin lisätään uutena harrastuksena.
+     * @param sekoitus lisättävän harrastuksen viite.  Huom tietorakenne muuttuu omistajaksi
+     * @throws SailoException jos tietorakenne on jo täynnä
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException,CloneNotSupportedException
+     * #PACKAGEIMPORT
+     * Harrastukset harrastukset = new Harrastukset();
+     * Harrastus har1 = new Harrastus(), har2 = new Harrastus();
+     * har1.rekisteroi(); har2.rekisteroi();
+     * harrastukset.getLkm() === 0;
+     * harrastukset.korvaaTaiLisaa(har1); harrastukset.getLkm() === 1;
+     * harrastukset.korvaaTaiLisaa(har2); harrastukset.getLkm() === 2;
+     * Harrastus har3 = har1.clone();
+     * har3.aseta(2,"kkk");
+     * Iterator<Sekoitus> i2=harrastukset.iterator();
+     * i2.next() === har1;
+     * harrastukset.korvaaTaiLisaa(har3); harrastukset.getLkm() === 2;
+     * i2=harrastukset.iterator();
+     * Harrastus h = i2.next();
+     * h === har3;
+     * h == har3 === true;
+     * h == har1 === false;
+     * </pre>
+     */ 
+    public void korvaaTaiLisaa(Sekoitus sekoitus) throws SailoException {
+        int id = sekoitus.getId();
+        for (int i = 0; i < getLkm(); i++) {
+            if (alkiot.get(i).getId() == id) {
+                alkiot.set(i, sekoitus);
+                muutettu = true;
+                return;
+            }
+        }
+        lisaa(sekoitus);
+    }
+
+    
     
     /**
      * lukee tiedostosta
@@ -119,6 +160,15 @@ public class Sekoitukset implements Iterable<Sekoitus> {
     public String getBakNimi() {
         return tiedostonNimi + ".bak";
     }
+    
+    /**
+     * Palauttaa rekisterin sekoitusten lukumäärän
+     * @return sekoitusten lukumäärä
+     */
+    public int getLkm() {
+        return alkiot.size();
+    }
+
     
     
     @Override

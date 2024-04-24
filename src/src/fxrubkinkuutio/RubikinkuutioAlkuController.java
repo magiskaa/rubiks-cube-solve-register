@@ -2,7 +2,10 @@ package fxrubkinkuutio;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
+
+
 import fi.jyu.mit.fxgui.ModalController;
 import fi.jyu.mit.fxgui.ModalControllerInterface;
 
@@ -13,12 +16,14 @@ import fi.jyu.mit.fxgui.ModalControllerInterface;
  */
 public class RubikinkuutioAlkuController implements ModalControllerInterface<String> {
     
+    @FXML private Button aloitaNappi;
+    
     @FXML private void handleAloita() {
-        ModalController.closeStage(null);
+        ModalController.closeStage(aloitaNappi);
     }
     
     @FXML private void handleLopeta() {
-        ModalController.closeStage(null);
+        ModalController.closeStage(aloitaNappi);
         Platform.exit();
     }
 

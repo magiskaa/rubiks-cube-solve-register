@@ -1,6 +1,7 @@
 package fxrubkinkuutio;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public class Rekisteri {
     private Ratkaisut ratkaisut = new Ratkaisut();
-    private Sekoitukset sekoitukset = new Sekoitukset();
+    static Sekoitukset sekoitukset = new Sekoitukset();
     
     /**
      * palauttaa montako ratkaisua on
@@ -68,6 +69,39 @@ public class Rekisteri {
         sekoitukset.lisaa(sek);
     }
     
+    /** 
+     * Korvaa jäsenen tietorakenteessa.  Ottaa jäsenen omistukseensa. 
+     * Etsitään samalla tunnusnumerolla oleva jäsen.  Jos ei löydy, 
+     * niin lisätään uutena jäsenenä. 
+     * @param ratkaisu lisätäävän jäsenen viite.  Huom tietorakenne muuttuu omistajaksi 
+     * @throws SailoException jos tietorakenne on jo täynnä 
+     */ 
+    public void korvaaTaiLisaa(Ratkaisu ratkaisu) throws SailoException { 
+        ratkaisut.korvaaTaiLisaa(ratkaisu); 
+    }
+
+    /** 
+     * Korvaa harrastuksen tietorakenteessa.  Ottaa harrastuksen omistukseensa. 
+     * Etsitään samalla tunnusnumerolla oleva harrastus.  Jos ei löydy, 
+     * niin lisätään uutena harrastuksena. 
+     * @param sekoitus lisärtävän harrastuksen viite.  Huom tietorakenne muuttuu omistajaksi 
+     * @throws SailoException jos tietorakenne on jo täynnä 
+     */ 
+    public void korvaaTaiLisaa(Sekoitus sekoitus) throws SailoException { 
+        sekoitukset.korvaaTaiLisaa(sekoitus); 
+    }
+
+    
+    /**
+     * @param hakuehto ni
+     * @return ni
+     * @throws SailoException virhe
+     */
+    public Collection<Ratkaisu> etsi(String hakuehto) throws SailoException {
+        return ratkaisut.etsi(hakuehto);
+    }
+    
+    
     /**
      * palauttaa viitteen ratkaisuun indeksissä i
      * @param i indeksi
@@ -86,6 +120,13 @@ public class Rekisteri {
      */
     public List<Sekoitus> annaSekoitukset(Ratkaisu ratkaisu) throws SailoException {
         return sekoitukset.annaSekoitukset(ratkaisu.getSekoitusId());   
+    }
+    
+    /**
+     * @return sekoitukset
+     */
+    public Sekoitukset annaSek() {
+        return sekoitukset;
     }
     
     /**

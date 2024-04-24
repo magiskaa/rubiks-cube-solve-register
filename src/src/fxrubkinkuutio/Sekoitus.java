@@ -10,7 +10,7 @@ import fi.jyu.mit.ohj2.Mjonot;
  * @version 20.3.2024
  *
  */
-public class Sekoitus {
+public class Sekoitus implements Cloneable {
     private int id;
     private int ratkaisuId;
     private String sekoitus;
@@ -116,6 +116,17 @@ public class Sekoitus {
     }
     
     /**
+     * @param sek muutettu sekoitus
+     * @return ni
+     */
+    public String aseta(String sek) {
+        String tsek = sek.trim();
+        if (tsek.matches("") || tsek.isEmpty()) return "Sekoitus tulee olla muotoa 'L R U2 B' D2 F'...'";
+        sekoitus = sek;
+        return null;
+    }
+    
+    /**
      * erottaa tiedoston rivistä kaikki omiin muuttujiin
      * @param rivi tiedoston rivi jossa on dataa
      */
@@ -124,6 +135,26 @@ public class Sekoitus {
         setId(Mjonot.erota(sb, '|', getId()));
         sekoitus = Mjonot.erota(sb, '|', sekoitus);
     }
+    
+    /**
+     * Tehdään identtinen klooni jäsenestä
+     * @return Object kloonattu jäsen
+     * @example
+     * <pre name="test">
+     * #THROWS CloneNotSupportedException 
+     *   Sekoitus sek = new Sekoitus();
+     *   sek.parse("   2   |  R' F2 B F2 U' L B2 F R L' ");
+     *   Sekoitus kopio = sek.clone();
+     *   kopio.toString() === sek.toString();
+     *   sek.parse("   1   |  U B D2 B' F2 U R' U L D' ");
+     *   kopio.toString().equals(sek.toString()) === false;
+     * </pre>
+     */
+    @Override
+    public Sekoitus clone() throws CloneNotSupportedException { 
+        return (Sekoitus)super.clone();
+    }
+
     
     @Override
     public boolean equals(Object obj) {

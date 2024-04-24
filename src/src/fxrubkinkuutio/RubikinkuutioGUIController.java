@@ -1,19 +1,19 @@
 package fxrubkinkuutio;
 
+import static fxrubkinkuutio.RubikinkuutioRatkaisuDialogController.getFieldId; 
 import java.io.PrintStream;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextArea;
-import javafx.scene.text.Font;
+import javafx.scene.layout.GridPane;
 import fi.jyu.mit.fxgui.*;
-
+import fi.jyu.mit.ohj2.Mjonot;
 import javafx.application.Platform;
 
 /**
@@ -24,12 +24,11 @@ import javafx.application.Platform;
  */
 public class RubikinkuutioGUIController implements Initializable {
     
-    @FXML private TextField Ratkaisu;
-    @FXML private TextField Aika;
-    @FXML private TextField Päivämäärä;
-    @FXML private TextField Kellonaika;
+    @FXML private TextField editSekoitus;
     @FXML private ListChooser<Ratkaisu> chooserRatkaisut;
     @FXML private ScrollPane panelRatkaisu;
+    @FXML private GridPane gridRatkaisu;
+    @FXML private TextField hakuehto;
     
     /**
      * alustus
@@ -61,6 +60,10 @@ public class RubikinkuutioGUIController implements Initializable {
         //ModalController.showModal(RubikinkuutioGUIController.class.getResource("RubikinkuutioLisaaSekoitusView.fxml"), null,null,null);
         lisaaSekoitus();
     }
+    
+    @FXML private void handleHakuehto() {
+        hae(0);
+    }
 
     @FXML private void handlePoista() {
         Dialogs.showMessageDialog("Ei vielä toimi");
@@ -70,8 +73,8 @@ public class RubikinkuutioGUIController implements Initializable {
         Dialogs.showMessageDialog("Ei vielä toimi");
     }
     
-    @FXML private void handleMuokkaa() {
-        Dialogs.showMessageDialog("Ei vielä toimi");
+    @FXML private void handleMuokkaa() throws SailoException {
+        muokkaa(1);
     }
     
     @FXML private void handleTulosta() {
@@ -83,17 +86,15 @@ public class RubikinkuutioGUIController implements Initializable {
     
     private Rekisteri rekisteri;
     private Ratkaisu ratkaisuKohdalla;
-    private TextArea areaRatkaisu = new TextArea();
+    private TextField edits[];
+    private int kentta = 0;
+    private static Sekoitus apuSekoitus = new Sekoitus();
     
     
     /**
      * alustus
      */
     protected void alusta() {
-        panelRatkaisu.setContent(areaRatkaisu);
-        areaRatkaisu.setFont(new Font("Courier New", 12));
-        panelRatkaisu.setFitToHeight(true);
-        
         chooserRatkaisut.clear();
         chooserRatkaisut.addSelectionListener(e -> {
             try {
@@ -102,6 +103,20 @@ public class RubikinkuutioGUIController implements Initializable {
                 e1.printStackTrace();
             }
         });
+
+        edits = RubikinkuutioRatkaisuDialogController.luoKentat(gridRatkaisu);
+        for (TextField edit : edits) {
+            if (edit != null) {
+                edit.setEditable(false);
+                edit.setOnMouseClicked(e -> {if (e.getClickCount() > 1)
+                    try {
+                        muokkaa(getFieldId(e.getSource(),0));
+                    } catch (SailoException e1) {
+                        e1.printStackTrace();
+                    } });
+                edit.focusedProperty().addListener((a,o,n) -> kentta = getFieldId(edit,kentta));
+            }
+        }
     }
     
     
@@ -145,11 +160,36 @@ public class RubikinkuutioGUIController implements Initializable {
         
         if (ratkaisuKohdalla == null) return;
         
-        areaRatkaisu.setText("");
-        try (PrintStream os = TextAreaOutputStream.getTextPrintStream(areaRatkaisu)) {
-            tulosta(os,ratkaisuKohdalla);
-        }
+        RubikinkuutioRatkaisuDialogController.naytaRatkaisu(edits, ratkaisuKohdalla);
+        naytaSekoitukset(ratkaisuKohdalla);
+    }
+    
+    
+    /**
+     * @param ratkaisu ratkaisu
+     */
+    public void naytaSekoitukset(Ratkaisu ratkaisu) {
+        editSekoitus.clear();
+        if (ratkaisu == null) return;
         
+        try {
+            List<Sekoitus> sekoitukset = rekisteri.annaSekoitukset(ratkaisu);
+            if (sekoitukset.size() == 0) return;
+            editSekoitus.setText(naytaSekoitus(sekoitukset.getFirst().toString()));
+        } catch (SailoException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    
+    /**
+     * @param rivi rivi
+     * @return sekoitus
+     */
+    public String naytaSekoitus(String rivi) {
+        StringBuilder sb = new StringBuilder(rivi);
+        Mjonot.erota(sb, '|', rivi);
+        return Mjonot.erota(sb, '|', rivi);
     }
     
     
@@ -158,14 +198,31 @@ public class RubikinkuutioGUIController implements Initializable {
      * @param id id
      */
     protected void hae(int id) {
+        
+        int rnro = id;
+        if (rnro <= 0) {
+            Ratkaisu kohdalla = ratkaisuKohdalla;
+            if (kohdalla != null) rnro = kohdalla.getId();
+        }
+        
+        String ehto = hakuehto.getText();
+        if (ehto.indexOf('*') < 0) ehto = '*' + ehto + '*';
+        
         chooserRatkaisut.clear();
         
         int index = 0;
-        for (int i = 0; i < rekisteri.getRatkaisuja(); i++) {
-            Ratkaisu ratkaisu = rekisteri.annaRatkaisu(i);
-            if (ratkaisu.getId() == id) index = i;
-            String listassa = ratkaisu.getId() + "  |  " + ratkaisu.getAika() + "  |  " + ratkaisu.getPvm();
-            chooserRatkaisut.add(listassa, ratkaisu);
+        Collection<Ratkaisu> ratkaisut;
+        try {
+            ratkaisut = rekisteri.etsi(ehto);
+            int i = 0;
+            for (Ratkaisu ratkaisu : ratkaisut) {
+                if (ratkaisu.getId() == rnro) index = i;
+                String listassa = ratkaisu.getId() + "  |  " + ratkaisu.getAika() + "  |  " + ratkaisu.getPvm();
+                chooserRatkaisut.add(listassa, ratkaisu);
+                i++;
+            }
+        } catch (SailoException e) {
+            Dialogs.showMessageDialog("Ratkaisun hakemisessa ongelmia " + e.getMessage());
         }
         chooserRatkaisut.setSelectedIndex(index);
     }
@@ -174,16 +231,17 @@ public class RubikinkuutioGUIController implements Initializable {
      * lisää ratkaisun rekisteriin ja kutsuu hae-aliohjelmaa
      */
     protected void lisaaRatkaisu() {
-        Ratkaisu uusi = new Ratkaisu();
-        uusi.rekisteroi();
-        uusi.testiArvot();
         try {
+            Ratkaisu uusi = new Ratkaisu();
+            uusi = RubikinkuutioRatkaisuDialogController.kysyRatkaisu(null, uusi, 1);
+            if (uusi == null) return;
+            uusi.rekisteroi();
             rekisteri.lisaa(uusi);
+            hae(uusi.getId());
         } catch (SailoException e) {
             Dialogs.showMessageDialog("Ongelmia uuden lisäämisessä " + e.getMessage());
             return;
         }
-        hae(uusi.getId());
     }
     
     /**
@@ -197,6 +255,22 @@ public class RubikinkuutioGUIController implements Initializable {
         sek.testiArvot(ratkaisuKohdalla.getId());
         rekisteri.lisaa(sek);
         hae(ratkaisuKohdalla.getId());
+    }
+    
+    private void muokkaa(int k) throws SailoException {
+        if (ratkaisuKohdalla == null) return;
+        try {
+            Ratkaisu ratkaisu;
+            ratkaisu = RubikinkuutioRatkaisuDialogController.kysyRatkaisu(null, ratkaisuKohdalla.clone(), k);
+            List<Sekoitus> sekoitukset = ratkaisuKohdalla.getSekoitus();
+            Sekoitus sekoitus = sekoitukset.getFirst();
+            if (ratkaisu == null) return;
+            rekisteri.korvaaTaiLisaa(ratkaisu);
+            rekisteri.korvaaTaiLisaa(sekoitus);
+            hae(ratkaisu.getId());
+        } catch (CloneNotSupportedException e) { 
+            // 
+        }
     }
     
     /**

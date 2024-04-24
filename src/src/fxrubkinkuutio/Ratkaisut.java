@@ -7,8 +7,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import fi.jyu.mit.ohj2.WildChars;
 
 /**
  * Ratkaisut
@@ -17,11 +21,10 @@ import java.util.NoSuchElementException;
  *
  */
 public class Ratkaisut implements Iterable<Ratkaisu> {
-    private static final int MAX_RATKAISUJA = 1000;
     private int lkm = 0;
     private String tiedostonNimi = "ratkaisut";
-    private Ratkaisu alkiot[] = new Ratkaisu[MAX_RATKAISUJA];
-    private boolean muutettu = false;
+    private Ratkaisu alkiot[] = new Ratkaisu[0];
+    static boolean muutettu = false;
     
     /**
      * oletusmuodostaja
@@ -33,7 +36,6 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
     /**
      * lisää ratkaisun listaan
      * @param ratkaisu ratkaisu
-     * @throws SailoException virhe jos liikaa alkioita (>1000)
      * @example
      * <pre name="test">
      * #THROWS SailoException 
@@ -54,12 +56,78 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
      * ratkaisut.lisaa(eka);  #THROWS SailoException
      * </pre>
      */
-    public void lisaa(Ratkaisu ratkaisu) throws SailoException {
-        if (lkm >= alkiot.length) throw new SailoException("Liikaa alkioita");
-        alkiot[lkm] = ratkaisu;
-        lkm++;
-        muutettu = true;
+    public void lisaa(Ratkaisu ratkaisu) {
+        if (lkm >= alkiot.length) {
+            Ratkaisu[] uudet = new Ratkaisu[lkm+1];
+            for (int i = 0; i < alkiot.length; i++) {
+                uudet[i] = alkiot[i];
+            }
+            uudet[lkm] = ratkaisu;
+            alkiot = uudet;
+            lkm++;
+            muutettu = true;
+        }
     }
+    
+    /**
+     * Korvaa jäsenen tietorakenteessa.  Ottaa jäsenen omistukseensa.
+     * Etsitään samalla tunnusnumerolla oleva jäsen.  Jos ei löydy,
+     * niin lisätään uutena jäsenenä.
+     * @param ratkaisu lisätäävän jäsenen viite.  Huom tietorakenne muuttuu omistajaksi
+     * @throws SailoException jos tietorakenne on jo täynnä
+     * <pre name="test">
+     * #THROWS SailoException,CloneNotSupportedException
+     * #PACKAGEIMPORT
+     * Jasenet jasenet = new Jasenet();
+     * Jasen aku1 = new Jasen(), aku2 = new Jasen();
+     * aku1.rekisteroi(); aku2.rekisteroi();
+     * jasenet.getLkm() === 0;
+     * jasenet.korvaaTaiLisaa(aku1); jasenet.getLkm() === 1;
+     * jasenet.korvaaTaiLisaa(aku2); jasenet.getLkm() === 2;
+     * Jasen aku3 = aku1.clone();
+     * aku3.setPostinumero("00130");
+     * Iterator<Jasen> it = jasenet.iterator();
+     * it.next() == aku1 === true;
+     * jasenet.korvaaTaiLisaa(aku3); jasenet.getLkm() === 2;
+     * it = jasenet.iterator();
+     * Jasen j0 = it.next();
+     * j0 === aku3;
+     * j0 == aku3 === true;
+     * j0 == aku1 === false;
+     * </pre>
+     */
+    public void korvaaTaiLisaa(Ratkaisu ratkaisu) throws SailoException {
+        int id = ratkaisu.getId();
+        for (int i = 0; i < lkm; i++) {
+            if ( alkiot[i].getId() == id ) {
+                alkiot[i] = ratkaisu;
+                muutettu = true;
+                return;
+            }
+        }
+        lisaa(ratkaisu);
+    }
+    
+    /**
+     * @param hakuehto hakuehto jolla haetaan
+     * @return ratkaisut jotka toteuttavat hakuehdon
+     */
+    public Collection<Ratkaisu> etsi(String hakuehto) {
+        String ehto = "*";
+        if (hakuehto != null && hakuehto.length() > 0) ehto = hakuehto;
+        Collection<Ratkaisu> loytyneet = new ArrayList<Ratkaisu>();
+        for (Ratkaisu ratkaisu : this) {
+            if (WildChars.onkoSamat(ratkaisu.anna(0), ehto)) loytyneet.add(ratkaisu);
+            else if (WildChars.onkoSamat(ratkaisu.anna(1), ehto)) loytyneet.add(ratkaisu);
+            else if (WildChars.onkoSamat(ratkaisu.anna(2), ehto)) loytyneet.add(ratkaisu);
+            else if (WildChars.onkoSamat(ratkaisu.anna(3), ehto)) loytyneet.add(ratkaisu);
+            else if (WildChars.onkoSamat(ratkaisu.anna(4), ehto)) loytyneet.add(ratkaisu);
+            else if (WildChars.onkoSamat(ratkaisu.anna(5), ehto)) loytyneet.add(ratkaisu);
+            else if (WildChars.onkoSamat(ratkaisu.anna(6), ehto)) loytyneet.add(ratkaisu);
+        }
+        return loytyneet;
+    }
+
     
     /**
      * palauttaa indeksissä olevan ratkaisun
@@ -67,7 +135,7 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
      * @return ratkaisu
      * @throws IndexOutOfBoundsException indeksi yli rajojen
      */
-    public Ratkaisu anna(int i) throws IndexOutOfBoundsException {
+    protected Ratkaisu anna(int i) throws IndexOutOfBoundsException {
         if (i < 0 || lkm <= i) throw new IndexOutOfBoundsException("Laiton indeksi: " + i);
         return alkiot[i];
     }
@@ -232,19 +300,15 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
         toka.rekisteroi();
         toka.testiArvot();
         
-        try {
-            ratkaisut.lisaa(eka);
-            ratkaisut.lisaa(toka);
-            
-            System.out.println("======= RATKAISUT TESTI =======");
-            
-            for (int i = 0; i < ratkaisut.getLkm(); i++) {
-                Ratkaisu ratkaisu = ratkaisut.anna(i);
-                System.out.println("Ratkaisu nro: " + i);
-                ratkaisu.tulosta(System.out);
-            }
-        } catch (SailoException ex) {
-            System.out.println(ex.getMessage());
+        ratkaisut.lisaa(eka);
+        ratkaisut.lisaa(toka);
+        
+        System.out.println("======= RATKAISUT TESTI =======");
+        
+        for (int i = 0; i < ratkaisut.getLkm(); i++) {
+            Ratkaisu ratkaisu = ratkaisut.anna(i);
+            System.out.println("Ratkaisu nro: " + i);
+            ratkaisu.tulosta(System.out);
         }
     }
 }

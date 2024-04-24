@@ -10,7 +10,7 @@
    <bottom>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button layoutX="154.0" layoutY="51.0" mnemonicParsing="false" onAction="#handleAloita" text="Aloita" />
+            <Button fx:id="aloitaNappi" layoutX="154.0" layoutY="51.0" mnemonicParsing="false" onAction="#handleAloita" text="Aloita" />
             <Button layoutX="247.0" layoutY="51.0" mnemonicParsing="false" onAction="#handleLopeta" style="-fx-background-color: red;" text="Poistu" />
          </children>
       </AnchorPane>
