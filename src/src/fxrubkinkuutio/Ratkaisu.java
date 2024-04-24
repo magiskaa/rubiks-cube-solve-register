@@ -1,6 +1,7 @@
 package fxrubkinkuutio;
 
 import java.io.*;
+import java.util.Comparator;
 import java.util.List;
 
 import fi.jyu.mit.ohj2.Mjonot;
@@ -33,6 +34,24 @@ public class Ratkaisu implements Cloneable {
     public Ratkaisu() {
         //
     }
+    
+    /** 
+     * Jäsenten vertailija 
+     */ 
+    public static class Vertailija implements Comparator<Ratkaisu> { 
+        private int k;  
+         
+        @SuppressWarnings("javadoc") 
+        public Vertailija(int k) { 
+            this.k = k; 
+        } 
+         
+        @Override 
+        public int compare(Ratkaisu rat1, Ratkaisu rat2) { 
+            return rat1.anna(k).compareToIgnoreCase(rat2.anna(k)); 
+        } 
+    } 
+
     
     /**
      * antaa testiarvot ratkaisulle
@@ -159,10 +178,11 @@ public class Ratkaisu implements Cloneable {
     
     Sekoitukset sekoitukset = Rekisteri.sekoitukset;
     
-    /**
-     * @param k k
-     * @return k
-     */
+    /** 
+     * Antaa k:n kentän sisällön merkkijonona 
+     * @param k monenenko kentän sisältö palautetaan 
+     * @return kentän sisältö merkkijonona 
+     */ 
     public String anna(int k) {
         switch (k) {
         case 0: return "" + id;

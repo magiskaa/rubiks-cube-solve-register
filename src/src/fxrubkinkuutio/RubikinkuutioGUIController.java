@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -29,6 +30,9 @@ public class RubikinkuutioGUIController implements Initializable {
     @FXML private ScrollPane panelRatkaisu;
     @FXML private GridPane gridRatkaisu;
     @FXML private TextField hakuehto;
+    @FXML private RadioButton radioRatkId;
+    @FXML private RadioButton radioAikaPs;
+    @FXML private RadioButton radioPvm;
     
     /**
      * alustus
@@ -66,7 +70,19 @@ public class RubikinkuutioGUIController implements Initializable {
     }
 
     @FXML private void handlePoista() {
-        Dialogs.showMessageDialog("Ei vielä toimi");
+        poistaRatkaisu();
+    }
+    
+    @FXML private void handleJarjestaId() {
+        jarjesta(0);
+    }
+    
+    @FXML private void handleJarjestaAikaPs() {
+        jarjesta(1);
+    }
+    
+    @FXML private void handleJarjestaPvm() {
+        jarjesta(2);
     }
     
     @FXML private void handleApua() {
@@ -217,12 +233,31 @@ public class RubikinkuutioGUIController implements Initializable {
             int i = 0;
             for (Ratkaisu ratkaisu : ratkaisut) {
                 if (ratkaisu.getId() == rnro) index = i;
-                String listassa = ratkaisu.getId() + "  |  " + ratkaisu.getAika() + "  |  " + ratkaisu.getPvm();
+                String listassa = ratkaisu.getId() + "  |  " + ratkaisu.getAika() + "  |  " + ratkaisu.getPvm() + "  |  " + ratkaisu.getKellonaika();
                 chooserRatkaisut.add(listassa, ratkaisu);
                 i++;
             }
         } catch (SailoException e) {
             Dialogs.showMessageDialog("Ratkaisun hakemisessa ongelmia " + e.getMessage());
+        }
+        chooserRatkaisut.setSelectedIndex(index);
+    }
+    
+    public void jarjesta(int k) {
+        int nro = 0;
+        Ratkaisu kohdalla = ratkaisuKohdalla;
+        if (kohdalla != null) nro = kohdalla.getId();
+        
+        chooserRatkaisut.clear();
+        
+        int index = 0;
+        Collection<Ratkaisu> ratkaisut;
+        ratkaisut = rekisteri.jarjesta(k);
+        int i = 0;
+        for (Ratkaisu ratkaisu : ratkaisut) {
+            if (ratkaisu.getId() == nro) index = i;
+            String listassa = ratkaisu.getId() + "  |  " + ratkaisu.getAika() + "  |  " + ratkaisu.getPvm() + "  |  " + ratkaisu.getKellonaika();
+            chooserRatkaisut.add(listassa, ratkaisu);
         }
         chooserRatkaisut.setSelectedIndex(index);
     }
@@ -271,6 +306,20 @@ public class RubikinkuutioGUIController implements Initializable {
         } catch (CloneNotSupportedException e) { 
             // 
         }
+    }
+    
+    /**
+     * poistaa valitun ratkaisun
+     */
+    public void poistaRatkaisu() {
+        Ratkaisu ratkaisu = ratkaisuKohdalla;
+        if (ratkaisu == null) return;
+        if (!Dialogs.showQuestionDialog("Poisto", "Poistetaanko ratkaisu: " + ratkaisu.getIdS() + " | " + ratkaisu.getAika() 
+                                        + "  |  " + ratkaisu.getPvm() + "  |  " + ratkaisu.getKellonaika(), "Kyllä", "ei")) return;
+        rekisteri.poista(ratkaisu);
+        int index = chooserRatkaisut.getSelectedIndex();
+        hae(0);
+        chooserRatkaisut.setSelectedIndex(index);
     }
     
     /**

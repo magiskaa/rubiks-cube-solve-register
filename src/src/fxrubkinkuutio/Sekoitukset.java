@@ -72,6 +72,67 @@ public class Sekoitukset implements Iterable<Sekoitus> {
     }
 
     
+    /**
+     * Poistaa valitun sekoituksen
+     * @param sekoitus poistettava sekoitus
+     * @return tosi jos löytyi poistettava tietue 
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException 
+     * #import java.io.File;
+     *  Sekoitukset sekoitukset = new Sekoitukset();
+     *  Sekoitus sek21 = new Sekoitus(); sek21.testiArvot(2);
+     *  Sekoitus sek11 = new Sekoitus(); sek11.testiArvot(1);
+     *  sekoitukset.lisaa(sek23);
+     *  sekoitukset.lisaa(sek11);
+     *  sekoitukset.poista(sek23) === false ; sekoitukset.getLkm() === 2;
+     *  sekoitukset.poista(sek11) === true;   sekoitukset.getLkm() === 1;
+     *  List<Sekoitus> h = sekoitukset.annaSekoitukset(1);
+     *  h.size() === 1; 
+     *  h.get(0) === sek21;
+     * </pre>
+     */
+    public boolean poista(Sekoitus sekoitus) {
+        boolean ret = alkiot.remove(sekoitus);
+        if (ret) muutettu = true;
+        return ret;
+    }
+
+    
+    /**
+     * Poistaa tietyn ratkaisun sekoitukset
+     * @param tunnusNro viite siihen, mihin liittyvät tietueet poistetaan
+     * @return montako poistettiin 
+     * @example
+     * <pre name="test">
+     *  Sekoitukset sekoitukset = new Sekoitukset();
+     *  Sekoitus sek21 = new Sekoitus(); sek21.testiArvot(2);
+     *  Sekoitus sek11 = new Sekoitus(); sek11.testiArvot(1);
+     *  sekoitukset.lisaa(sek21);
+     *  sekoitukset.lisaa(sek11);
+     *  sekoitukset.poistaSekoitukset(1) === 1;  sekoitukset.getLkm() === 2;
+     *  sekoitukset.poistaSekoitukset(1) === 0;  sekoitukset.getLkm() === 2;
+     *  List<Sekoitus> h = sekoitukset.annaSekoitukset(2);
+     *  h.size() === 0; 
+     *  h = sekoitukset.annaSekoitukset(1);
+     *  h.get(0) === sek21;
+     *  h.get(1) === sek11;
+     * </pre>
+     */
+    public int poistaSekoitukset(int tunnusNro) {
+        int n = 0;
+        for (Iterator<Sekoitus> it = alkiot.iterator(); it.hasNext();) {
+            Sekoitus sek = it.next();
+            if ( sek.getRatkaisuId() == tunnusNro ) {
+                it.remove();
+                n++;
+            }
+        }
+        if (n > 0) muutettu = true;
+        return n;
+    }
+
+    
     
     /**
      * lukee tiedostosta

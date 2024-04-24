@@ -24,11 +24,14 @@ public class Rekisteri {
     
     /**
      * poistaa ratkaisun
-     * @param nro ratkaisun id
+     * @param ratkaisu poistettava ratkaisu
      * @return poistettujen määrä
      */
-    public int poista(@SuppressWarnings("unused") int nro) {
-        return 0;
+    public int poista(Ratkaisu ratkaisu) {
+        if (ratkaisu == null) return 0;
+        int ret = ratkaisut.poista(ratkaisu.getId());
+        sekoitukset.poistaSekoitukset(ratkaisu.getId());
+        return ret;
     }
     
     /**
@@ -99,6 +102,11 @@ public class Rekisteri {
      */
     public Collection<Ratkaisu> etsi(String hakuehto) throws SailoException {
         return ratkaisut.etsi(hakuehto);
+    }
+    
+    
+    public Collection<Ratkaisu> jarjesta(int k) {
+        return ratkaisut.jarjesta(k);
     }
     
     

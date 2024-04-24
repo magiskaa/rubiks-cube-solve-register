@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import fi.jyu.mit.ohj2.WildChars;
@@ -108,6 +110,82 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
         lisaa(ratkaisu);
     }
     
+    /** 
+     * Poistaa ratkaisun jolla on valittu tunnusnumero  
+     * @param id poistettavan ratkaisun tunnusnumero 
+     * @return 1 jos poistettiin, 0 jos ei löydy 
+     * @example 
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     * Ratkaisut ratkaisut = new Ratkaisut(); 
+     * Ratkaisu rat1 = new Ratkaisu(), rat2 = new Ratkaisu(), rat3 = new Ratkaisu(); 
+     * rat1.rekisteroi(); rat2.rekisteroi(); rat3.rekisteroi(); 
+     * int id1 = rat1.getId(); 
+     * ratkaisut.lisaa(rat1); ratkaisut.lisaa(rat2); ratkaisut.lisaa(rat3); 
+     * ratkaisut.poista(id1+1) === 1; 
+     * ratkaisut.annaId(id1+1) === null; ratkaisut.getLkm() === 2; 
+     * ratkaisut.poista(id1) === 1; ratkaisut.getLkm() === 1; 
+     * ratkaisut.poista(id1+3) === 0; ratkaisut.getLkm() === 1; 
+     * </pre> 
+     *  
+     */ 
+    public int poista(int id) { 
+        int ind = etsiId(id); 
+        if (ind < 0) return 0; 
+        lkm--; 
+        for (int i = ind; i < lkm; i++) 
+            alkiot[i] = alkiot[i + 1]; 
+        alkiot[lkm] = null; 
+        muutettu = true; 
+        return 1; 
+    } 
+    
+    /** 
+     * Etsii ratkaisun id:n perusteella 
+     * @param id tunnusnumero, jonka mukaan etsitään 
+     * @return ratkaisu jolla etsittävä id tai null 
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     * Ratkaisut ratkaisut = new Ratkaisut(); 
+     * Ratkaisu rat1 = new Ratkaisu(), rat2 = new Ratkaisu(), rat3 = new Ratkaisu(); 
+     * rat1.rekisteroi(); rat2.rekisteroi(); rat3.rekisteroi(); 
+     * int id1 = rat1.getId(); 
+     * ratkaisut.lisaa(rat1); ratkaisut.lisaa(rat2); ratkaisut.lisaa(rat3); 
+     * ratkaisut.annaId(id1  ) == rat1 === true; 
+     * ratkaisut.annaId(id1+1) == rat2 === true; 
+     * ratkaisut.annaId(id1+2) == rat3 === true; 
+     * </pre> 
+     */ 
+    public Ratkaisu annaId(int id) { 
+        for (Ratkaisu ratkaisu : this) { 
+            if (id == ratkaisu.getId()) return ratkaisu; 
+        } 
+        return null; 
+    } 
+
+    
+    /** 
+     * Etsii ratkaisun id:n perusteella 
+     * @param id tunnusnumero, jonka mukaan etsitään 
+     * @return löytyneen ratkaisun indeksi tai -1 jos ei löydy 
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     * Ratkaisut ratkaisut = new Ratkaisu(); 
+     * Ratkaisu rat1 = new Ratkaisu(), rat2 = new Ratkaisu(), rat3 = new Ratkaisu(); 
+     * rat1.rekisteroi(); rat2.rekisteroi(); rat3.rekisteroi(); 
+     * int id1 = rat1.getId(); 
+     * ratkaisut.lisaa(rat1); ratkaisut.lisaa(rat2); ratkaisut.lisaa(rat3); 
+     * ratkaisut.etsiId(id1+1) === 1; 
+     * ratkaisut.etsiId(id1+2) === 2; 
+     * </pre> 
+     */ 
+    public int etsiId(int id) { 
+        for (int i = 0; i < lkm; i++) 
+            if (id == alkiot[i].getId()) return i; 
+        return -1; 
+    } 
+
+    
     /**
      * @param hakuehto hakuehto jolla haetaan
      * @return ratkaisut jotka toteuttavat hakuehdon
@@ -115,19 +193,55 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
     public Collection<Ratkaisu> etsi(String hakuehto) {
         String ehto = "*";
         if (hakuehto != null && hakuehto.length() > 0) ehto = hakuehto;
-        Collection<Ratkaisu> loytyneet = new ArrayList<Ratkaisu>();
+//        int k = 0;
+        List<Ratkaisu> loytyneet = new ArrayList<Ratkaisu>();
         for (Ratkaisu ratkaisu : this) {
-            if (WildChars.onkoSamat(ratkaisu.anna(0), ehto)) loytyneet.add(ratkaisu);
-            else if (WildChars.onkoSamat(ratkaisu.anna(1), ehto)) loytyneet.add(ratkaisu);
-            else if (WildChars.onkoSamat(ratkaisu.anna(2), ehto)) loytyneet.add(ratkaisu);
-            else if (WildChars.onkoSamat(ratkaisu.anna(3), ehto)) loytyneet.add(ratkaisu);
-            else if (WildChars.onkoSamat(ratkaisu.anna(4), ehto)) loytyneet.add(ratkaisu);
-            else if (WildChars.onkoSamat(ratkaisu.anna(5), ehto)) loytyneet.add(ratkaisu);
-            else if (WildChars.onkoSamat(ratkaisu.anna(6), ehto)) loytyneet.add(ratkaisu);
+            if (WildChars.onkoSamat(ratkaisu.anna(0), ehto)) {
+                loytyneet.add(ratkaisu);
+//                k = 0;
+            }
+            else if (WildChars.onkoSamat(ratkaisu.anna(1), ehto)) {
+                loytyneet.add(ratkaisu);
+//                k = 1;
+            }
+            else if (WildChars.onkoSamat(ratkaisu.anna(2), ehto)) {
+                loytyneet.add(ratkaisu);
+//                k = 2;
+            }
+            else if (WildChars.onkoSamat(ratkaisu.anna(3), ehto)) {
+                loytyneet.add(ratkaisu);
+//                k = 3;
+            }
+            else if (WildChars.onkoSamat(ratkaisu.anna(4), ehto)) {
+                loytyneet.add(ratkaisu);
+//                k = 4;
+            }
+            else if (WildChars.onkoSamat(ratkaisu.anna(5), ehto)) {
+                loytyneet.add(ratkaisu);
+//                k = 5;
+            }
+            else if (WildChars.onkoSamat(ratkaisu.anna(6), ehto)) {
+                loytyneet.add(ratkaisu);
+//                k = 6;
+            }
         }
+//        Collections.sort(loytyneet, new Ratkaisu.Vertailija(k));
         return loytyneet;
     }
 
+    public Collection<Ratkaisu> jarjesta(int k) {
+        List<Ratkaisu> loytyneet = new ArrayList<Ratkaisu>();
+        for (Ratkaisu ratkaisu : this) {
+            loytyneet.add(ratkaisu);
+        }
+        switch (k) {
+        case 0: Collections.sort(loytyneet, new Ratkaisu.Vertailija(0)); break;
+        case 1: Collections.sort(loytyneet, new Ratkaisu.Vertailija(1)); break;
+        case 2: Collections.sort(loytyneet, new Ratkaisu.Vertailija(2)); break;
+        default: Collections.sort(loytyneet, new Ratkaisu.Vertailija(1)); break;
+        }
+        return loytyneet;
+    }
     
     /**
      * palauttaa indeksissä olevan ratkaisun
