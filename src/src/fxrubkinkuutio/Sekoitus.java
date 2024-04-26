@@ -32,6 +32,13 @@ public class Sekoitus implements Cloneable {
     }
     
     /**
+     * @param sekoitus sekoitus stringinä
+     */
+    public Sekoitus(String sekoitus) {
+        this.sekoitus = sekoitus;
+    }
+    
+    /**
      * antaa sekoitukselle testiarvot
      * @param nro ratkaisun numero
      */
@@ -94,6 +101,14 @@ public class Sekoitus implements Cloneable {
     }
     
     /**
+     * palauttaa seuraavan id:n
+     * @return seuraava id
+     */
+    public int getSeur() {
+        return seuraavaId;
+    }
+    
+    /**
      * asettaa id:n
      * @param nr numero
      */
@@ -115,16 +130,6 @@ public class Sekoitus implements Cloneable {
         return sekoitus;
     }
     
-    /**
-     * @param sek muutettu sekoitus
-     * @return ni
-     */
-    public String aseta(String sek) {
-        String tsek = sek.trim();
-        if (tsek.matches("") || tsek.isEmpty()) return "Sekoitus tulee olla muotoa 'L R U2 B' D2 F'...'";
-        sekoitus = sek;
-        return null;
-    }
     
     /**
      * erottaa tiedoston rivistä kaikki omiin muuttujiin
@@ -169,7 +174,7 @@ public class Sekoitus implements Cloneable {
     }
     
     /**
-     * @param args ei
+     * @param args ei käytössä
      */
     public static void main(String[] args) {
         Sekoitus sek = new Sekoitus();

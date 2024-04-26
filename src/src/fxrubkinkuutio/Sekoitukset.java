@@ -20,7 +20,7 @@ public class Sekoitukset implements Iterable<Sekoitus> {
     private boolean muutettu = false;
     private String tiedostonNimi = "";
     
-    private final List<Sekoitus> alkiot = new ArrayList<Sekoitus>();
+    private ArrayList<Sekoitus> alkiot = new ArrayList<Sekoitus>();
     
     /**
      * lisää sekoituksen listaan
@@ -32,28 +32,39 @@ public class Sekoitukset implements Iterable<Sekoitus> {
     }
     
     /**
-     * Korvaa harrastuksen tietorakenteessa.  Ottaa harrastuksen omistukseensa.
-     * Etsitään samalla tunnusnumerolla oleva harrastus.  Jos ei löydy,
-     * niin lisätään uutena harrastuksena.
-     * @param sekoitus lisättävän harrastuksen viite.  Huom tietorakenne muuttuu omistajaksi
+     * lisää sekoituksen listaan
+     * @param sekoitus sekoitus stringinä
+     */
+    public void lisaaSekoitus(String sekoitus) {
+        Sekoitus uusi = new Sekoitus(sekoitus);
+        uusi.rekisteroi();
+        alkiot.add(uusi);
+        muutettu = true;
+    }
+    
+    /**
+     * Korvaa sekoituksen tietorakenteessa.  Ottaa sekoituksen omistukseensa.
+     * Etsitään samalla tunnusnumerolla oleva sekoitus.  Jos ei löydy,
+     * niin lisätään uutena sekoituksena.
+     * @param sekoitus lisättävän sekoituksen viite.  Huom tietorakenne muuttuu omistajaksi
      * @throws SailoException jos tietorakenne on jo täynnä
      * @example
      * <pre name="test">
      * #THROWS SailoException,CloneNotSupportedException
      * #PACKAGEIMPORT
-     * Harrastukset harrastukset = new Harrastukset();
-     * Harrastus har1 = new Harrastus(), har2 = new Harrastus();
+     * Sekoitukset harrastukset = new Sekoitukset();
+     * Sekoitus har1 = new Sekoitus(), har2 = new Sekoitus();
      * har1.rekisteroi(); har2.rekisteroi();
-     * harrastukset.getLkm() === 0;
-     * harrastukset.korvaaTaiLisaa(har1); harrastukset.getLkm() === 1;
-     * harrastukset.korvaaTaiLisaa(har2); harrastukset.getLkm() === 2;
-     * Harrastus har3 = har1.clone();
+     * sekoitukset.getLkm() === 0;
+     * sekoitukset.korvaaTaiLisaa(har1); sekoitukset.getLkm() === 1;
+     * sekoitukset.korvaaTaiLisaa(har2); sekoitukset.getLkm() === 2;
+     * Sekoitus har3 = har1.clone();
      * har3.aseta(2,"kkk");
-     * Iterator<Sekoitus> i2=harrastukset.iterator();
+     * Iterator<Sekoitus> i2=sekoitukset.iterator();
      * i2.next() === har1;
-     * harrastukset.korvaaTaiLisaa(har3); harrastukset.getLkm() === 2;
-     * i2=harrastukset.iterator();
-     * Harrastus h = i2.next();
+     * sekoitukset.korvaaTaiLisaa(har3); sekoitukset.getLkm() === 2;
+     * i2=sekoitukset.iterator();
+     * Sekoitus h = i2.next();
      * h === har3;
      * h == har3 === true;
      * h == har1 === false;
@@ -69,6 +80,19 @@ public class Sekoitukset implements Iterable<Sekoitus> {
             }
         }
         lisaa(sekoitus);
+    }
+    
+    /**
+     * @param sekoitus sekoitus stringinä
+     * @return viite sekoitukseen jos sekoitus löytyy, null jos ei
+     */
+    public Sekoitus etsiTaiLuoSekoitus(String sekoitus) {
+        for (int i = 0; i < alkiot.size(); i++) {
+            if (alkiot.get(i).getSekoitus().equals(sekoitus)) {
+                return alkiot.get(i);
+            }
+        }
+        return null;
     }
 
     
@@ -123,7 +147,7 @@ public class Sekoitukset implements Iterable<Sekoitus> {
         int n = 0;
         for (Iterator<Sekoitus> it = alkiot.iterator(); it.hasNext();) {
             Sekoitus sek = it.next();
-            if ( sek.getRatkaisuId() == tunnusNro ) {
+            if ( sek.getId() == tunnusNro ) {
                 it.remove();
                 n++;
             }
@@ -135,7 +159,7 @@ public class Sekoitukset implements Iterable<Sekoitus> {
     
     
     /**
-     * lukee tiedostosta
+     * lukee tiedot tiedostosta
      * @param tied tiedosto josta luetaan
      * @throws SailoException virhe
      */
@@ -159,7 +183,7 @@ public class Sekoitukset implements Iterable<Sekoitus> {
     }
     
     /**
-     * lukee tiedostosta
+     * lukee tiedot tiedostosta
      * @throws SailoException virhe
      */
     public void lueTiedostosta() throws SailoException {
@@ -223,13 +247,30 @@ public class Sekoitukset implements Iterable<Sekoitus> {
     }
     
     /**
+     * palauttaa viitteen sekoitukseen indeksissä i
+     * @param i indeksi
+     * @return viite sekoitukseen
+     */
+    public Sekoitus getSekoitus(int i) {
+        return alkiot.get(i);
+    }
+    
+    /**
+     * palauttaa indeksissä i olevan sekoituksen stringinä
+     * @param i indeksi
+     * @return sekoituksen stringinä
+     */
+    public String getSekoitusString(int i) {
+        return getSekoitus(i).getSekoitus();
+    }
+    
+    /**
      * Palauttaa rekisterin sekoitusten lukumäärän
      * @return sekoitusten lukumäärä
      */
     public int getLkm() {
         return alkiot.size();
     }
-
     
     
     @Override
@@ -269,6 +310,12 @@ public class Sekoitukset implements Iterable<Sekoitus> {
         List<Sekoitus> loydetyt = new ArrayList<Sekoitus>();
         for (Sekoitus sek : alkiot) {
             if (sek.getId() == tunnusnro) loydetyt.add(sek);
+        }
+        if (loydetyt.isEmpty()) {
+            Sekoitus sekoitus = new Sekoitus("");
+            sekoitus.rekisteroi();
+            lisaa(sekoitus);
+            loydetyt.add(sekoitus);
         }
         return loydetyt;
     }

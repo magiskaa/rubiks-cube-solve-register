@@ -27,6 +27,7 @@ public class RubikinkuutioRatkaisuDialogController implements ModalControllerInt
     @FXML private GridPane gridRatkaisu;
     
     @FXML private void handleOK() {
+        kasitteleMuutosRatkaisuun(edits[6]);
         if (ratkaisuKohdalla != null && ratkaisuKohdalla.getAika().trim().equals("")) {
             naytaVirhe("Aika ei saa olla tyhjä");
             return;
@@ -50,6 +51,7 @@ public class RubikinkuutioRatkaisuDialogController implements ModalControllerInt
     private static Ratkaisu apuRatkaisu = new Ratkaisu();
     private TextField[] edits;
     private int kentta = 0;
+    private Rekisteri rekisteri = new Rekisteri();
     
     
     /**
@@ -100,11 +102,18 @@ public class RubikinkuutioRatkaisuDialogController implements ModalControllerInt
      */
     protected void alusta() {
         edits = luoKentat(gridRatkaisu);
+        int i = 1;
         for (TextField edit : edits) {
-            if (edit != null) {
+            if (!(edit == null)) {
+                final int k = i++;
+                if (k == 6) continue;
                 edit.setOnKeyReleased(e -> kasitteleMuutosRatkaisuun((TextField)(e.getSource())));
             }
         }
+    }
+    
+    private void setRekisteri(Rekisteri rekisteri) {
+        this.rekisteri = rekisteri;
     }
     
     
@@ -127,7 +136,7 @@ public class RubikinkuutioRatkaisuDialogController implements ModalControllerInt
         int k = getFieldId(edit, apuRatkaisu.ekaKentta());
         String s = edit.getText();
         String virhe = null;
-        virhe = ratkaisuKohdalla.aseta(k, s);
+        virhe = ratkaisuKohdalla.aseta(k, s, rekisteri);
         if (virhe == null) {
             Dialogs.setToolTipText(edit, "");
             edit.getStyleClass().removeAll("virhe");
@@ -137,10 +146,6 @@ public class RubikinkuutioRatkaisuDialogController implements ModalControllerInt
             edit.getStyleClass().removeAll("virhe");
             naytaVirhe(virhe);
         }
-    }
-    
-    private void setKentta(int kentta) {
-        this.kentta = kentta;
     }
     
     
@@ -167,22 +172,24 @@ public class RubikinkuutioRatkaisuDialogController implements ModalControllerInt
      * @param ratkaisu ratkaisu
      */
     public static void naytaRatkaisu(TextField[] edits, Ratkaisu ratkaisu) {
-        if (ratkaisu == null) return;    
+        if (ratkaisu == null) return;
+        
         for (int k = ratkaisu.ekaKentta(); k < ratkaisu.getKenttia(); k++) {
-            edits[k].setText(ratkaisu.anna(k));
+            edits[k].setText(ratkaisu.annappa(k));
         }
     }
+    
     
     /**
      * @param modalityStage ni
      * @param oletus ni
-     * @param kentta kentta
+     * @param rekisteri ni
      * @return ni
      */
-    public static Ratkaisu kysyRatkaisu(Stage modalityStage, Ratkaisu oletus, int kentta) {
+    public static Ratkaisu kysyRatkaisu(Stage modalityStage, Ratkaisu oletus, Rekisteri rekisteri) {
         return ModalController.<Ratkaisu, RubikinkuutioRatkaisuDialogController>showModal(
                 RubikinkuutioRatkaisuDialogController.class.getResource("RubikinkuutioMuokkaaView.fxml"), "Rekisteri",
-                modalityStage, oletus, ctrl -> ctrl.setKentta(kentta)); 
+                modalityStage, oletus, ctrl -> ctrl.setRekisteri(rekisteri)); 
     }
-
+    
 }

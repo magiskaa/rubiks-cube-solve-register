@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class Rekisteri {
     private Ratkaisut ratkaisut = new Ratkaisut();
-    static Sekoitukset sekoitukset = new Sekoitukset();
+    private Sekoitukset sekoitukset = new Sekoitukset();
     
     /**
      * palauttaa montako ratkaisua on
@@ -30,7 +30,7 @@ public class Rekisteri {
     public int poista(Ratkaisu ratkaisu) {
         if (ratkaisu == null) return 0;
         int ret = ratkaisut.poista(ratkaisu.getId());
-        sekoitukset.poistaSekoitukset(ratkaisu.getId());
+        sekoitukset.poistaSekoitukset(ratkaisu.getSekoitusId());
         return ret;
     }
     
@@ -64,12 +64,20 @@ public class Rekisteri {
     }
     
     /**
-     * lisää sekoituksen
+     * lisää sekoituksiin uuden sekoituksen
      * @param sek sekoitus
      * @throws SailoException virhe
      */
     public void lisaa(Sekoitus sek) throws SailoException {
         sekoitukset.lisaa(sek);
+    }
+    
+    /**
+     * lisää sekoituksiin uuden sekoituksen
+     * @param sek sekoitus stringinä
+     */
+    public void lisaa(String sek) {
+        sekoitukset.lisaaSekoitus(sek);
     }
     
     /** 
@@ -93,11 +101,25 @@ public class Rekisteri {
     public void korvaaTaiLisaa(Sekoitus sekoitus) throws SailoException { 
         sekoitukset.korvaaTaiLisaa(sekoitus); 
     }
+    
+    /**
+     * palautta löydetyn sekoituksen tai uuden sekoituksen jos mitään ei löytynyt
+     * @param sekoitus sekoitus stringinä
+     * @return löydetty sekoitus tai uusi sekoitus
+     */
+    public Sekoitus etsiTaiLuoSekoitus(String sekoitus) {
+        Sekoitus sek = sekoitukset.etsiTaiLuoSekoitus(sekoitus);
+        if (sek == null) {
+            sekoitukset.lisaaSekoitus(sekoitus);
+            return sekoitukset.getSekoitus(sekoitukset.getLkm()-1);
+        }
+        return sek;
+    }
 
     
     /**
-     * @param hakuehto ni
-     * @return ni
+     * @param hakuehto hakuehto
+     * @return ratkaisut jotka sopivat hakuehtoon
      * @throws SailoException virhe
      */
     public Collection<Ratkaisu> etsi(String hakuehto) throws SailoException {
@@ -105,6 +127,10 @@ public class Rekisteri {
     }
     
     
+    /**
+     * @param k minkä mukaan järjestetään
+     * @return ratkaisut järjestettynä
+     */
     public Collection<Ratkaisu> jarjesta(int k) {
         return ratkaisut.jarjesta(k);
     }
@@ -113,11 +139,30 @@ public class Rekisteri {
     /**
      * palauttaa viitteen ratkaisuun indeksissä i
      * @param i indeksi
-     * @return viite
+     * @return viite ratkaisuun
      * @throws IndexOutOfBoundsException virhe jos indeksi on yli rajojen
      */
     public Ratkaisu annaRatkaisu(int i) throws IndexOutOfBoundsException {
         return ratkaisut.anna(i);
+    }
+    
+    /**
+     * palauttaa sekoituksen stringinä
+     * @param i indeksi
+     * @return sekoitus stringinä
+     */
+    public String annaSekoitus(int i) {
+        Ratkaisu ratkaisu = annaRatkaisu(i);
+        return sekoitukset.getSekoitusString(ratkaisu.getSekoitusId());
+    }
+    
+    /**
+     * palauttaa viitteen sekoitukseen
+     * @param ratkaisu minkä ratkaisun sekoitus
+     * @return viitteen sekoitukseen
+     */
+    public Sekoitus annaSekoitus(Ratkaisu ratkaisu) {
+        return sekoitukset.getSekoitus(ratkaisu.getSekoitusId());
     }
     
     /**
@@ -131,6 +176,7 @@ public class Rekisteri {
     }
     
     /**
+     * palauttaa sekoitukset
      * @return sekoitukset
      */
     public Sekoitukset annaSek() {
@@ -151,7 +197,7 @@ public class Rekisteri {
     }
     
     /**
-     * Lukee tiedot
+     * Lukee tiedot tiedostosta
      * @param nimi jota käytetään lukemisessa
      * @throws SailoException jos lukeminen epäonnistuu
      */
@@ -183,9 +229,10 @@ public class Rekisteri {
         }
         if (!"".equals(virhe)) throw new SailoException(virhe);
     }
-
+    
+    
     /**
-     * @param args ei
+     * @param args ei käytössä
      */
     public static void main(String[] args) {
         Rekisteri rekisteri = new Rekisteri();

@@ -9,7 +9,6 @@ import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -30,9 +29,6 @@ public class RubikinkuutioGUIController implements Initializable {
     @FXML private ScrollPane panelRatkaisu;
     @FXML private GridPane gridRatkaisu;
     @FXML private TextField hakuehto;
-    @FXML private RadioButton radioRatkId;
-    @FXML private RadioButton radioAikaPs;
-    @FXML private RadioButton radioPvm;
     
     /**
      * alustus
@@ -104,7 +100,6 @@ public class RubikinkuutioGUIController implements Initializable {
     private Ratkaisu ratkaisuKohdalla;
     private TextField edits[];
     private int kentta = 0;
-    private static Sekoitus apuSekoitus = new Sekoitus();
     
     
     /**
@@ -173,7 +168,6 @@ public class RubikinkuutioGUIController implements Initializable {
      */
     protected void naytaRatkaisu() throws SailoException {
         ratkaisuKohdalla = chooserRatkaisut.getSelectedObject();
-        
         if (ratkaisuKohdalla == null) return;
         
         RubikinkuutioRatkaisuDialogController.naytaRatkaisu(edits, ratkaisuKohdalla);
@@ -243,6 +237,9 @@ public class RubikinkuutioGUIController implements Initializable {
         chooserRatkaisut.setSelectedIndex(index);
     }
     
+    /**
+     * @param k minkä mukaan järjestetään
+     */
     public void jarjesta(int k) {
         int nro = 0;
         Ratkaisu kohdalla = ratkaisuKohdalla;
@@ -268,7 +265,7 @@ public class RubikinkuutioGUIController implements Initializable {
     protected void lisaaRatkaisu() {
         try {
             Ratkaisu uusi = new Ratkaisu();
-            uusi = RubikinkuutioRatkaisuDialogController.kysyRatkaisu(null, uusi, 1);
+            uusi = RubikinkuutioRatkaisuDialogController.kysyRatkaisu(null, uusi, rekisteri);
             if (uusi == null) return;
             uusi.rekisteroi();
             rekisteri.lisaa(uusi);
@@ -291,22 +288,21 @@ public class RubikinkuutioGUIController implements Initializable {
         rekisteri.lisaa(sek);
         hae(ratkaisuKohdalla.getId());
     }
+
     
-    private void muokkaa(int k) throws SailoException {
+    private void muokkaa(@SuppressWarnings("unused") int k) throws SailoException {
         if (ratkaisuKohdalla == null) return;
         try {
-            Ratkaisu ratkaisu;
-            ratkaisu = RubikinkuutioRatkaisuDialogController.kysyRatkaisu(null, ratkaisuKohdalla.clone(), k);
-            List<Sekoitus> sekoitukset = ratkaisuKohdalla.getSekoitus();
-            Sekoitus sekoitus = sekoitukset.getFirst();
-            if (ratkaisu == null) return;
-            rekisteri.korvaaTaiLisaa(ratkaisu);
-            rekisteri.korvaaTaiLisaa(sekoitus);
-            hae(ratkaisu.getId());
+            Ratkaisu muokattu;
+            muokattu = RubikinkuutioRatkaisuDialogController.kysyRatkaisu(null, ratkaisuKohdalla.clone(), rekisteri);
+            if (muokattu == null) return;
+            rekisteri.korvaaTaiLisaa(muokattu);
+            hae(muokattu.getId());
         } catch (CloneNotSupportedException e) { 
             // 
         }
     }
+
     
     /**
      * poistaa valitun ratkaisun
@@ -336,7 +332,7 @@ public class RubikinkuutioGUIController implements Initializable {
         for (Sekoitus sek : sekoitukset)
             sek.tulosta(os);
     }
-    
+   
     
     /**
      * tekee rekisterin
@@ -347,7 +343,4 @@ public class RubikinkuutioGUIController implements Initializable {
         this.rekisteri = rekisteri;
         naytaRatkaisu();
     } 
-    
-    
-    
 }

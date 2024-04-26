@@ -2,7 +2,6 @@ package fxrubkinkuutio;
 
 import java.io.*;
 import java.util.Comparator;
-import java.util.List;
 
 import fi.jyu.mit.ohj2.Mjonot;
 
@@ -14,23 +13,35 @@ import fi.jyu.mit.ohj2.Mjonot;
  */
 public class Ratkaisu implements Cloneable {
     private int id = 1;
-    private String aika = " ";
-    private String pvm = " ";
-    private String kellonaika = " ";
+    private String aika = "";
+    private String pvm = "";
+    private String kellonaika = "";
     private String dnf = "F";
     private String kaksiS = "F";
-    private int sekoitusId = 1;
+    private int sekoitusId;
+    
     private static int seuraavaId = 1;
     
     
+    /**
+     * montako kenttaa ratkaisusta näytetään
+     * @return kenttien lukumäärä
+     */
     public int getKenttia() {
         return 7;
     }
     
+    /**
+     * palauttaa ensimmäisen näytettävän kentän
+     * @return ensimmäinen näytettävä kenttä
+     */
     public int ekaKentta() {
         return 1;
     }
     
+    /**
+     * 
+     */
     public Ratkaisu() {
         //
     }
@@ -48,7 +59,7 @@ public class Ratkaisu implements Cloneable {
          
         @Override 
         public int compare(Ratkaisu rat1, Ratkaisu rat2) { 
-            return rat1.anna(k).compareToIgnoreCase(rat2.anna(k)); 
+            return rat1.annappa(k).compareToIgnoreCase(rat2.annappa(k)); 
         } 
     } 
 
@@ -117,6 +128,10 @@ public class Ratkaisu implements Cloneable {
         return id;
     }
     
+    /**
+     * palauttaa ratkaisun id:n stringinä
+     * @return id stringinä
+     */
     public String getIdS() {
         return "" + id;
     }
@@ -160,30 +175,37 @@ public class Ratkaisu implements Cloneable {
         return pvm;
     }
     
+    /**
+     * palauttaa ratkaisun kellonajan
+     * @return ratkaisun kellonaika
+     */
     public String getKellonaika() {
         return kellonaika;
     }
     
+    /**
+     * palauttaa T jos ratkaisu on DNF tai F jos ei
+     * @return T tai F
+     */
     public String getDnf() {
         return dnf;
     }
     
+    /**
+     * palauttaa T jos ratkaisuun tulee +2s tai F jos ei
+     * @return T tai F
+     */
     public String get2s() {
         return kaksiS;
     }
     
-    public List<Sekoitus> getSekoitus() {
-        return sekoitukset.annaSekoitukset(getSekoitusId());
-    }
-    
-    Sekoitukset sekoitukset = Rekisteri.sekoitukset;
     
     /** 
      * Antaa k:n kentän sisällön merkkijonona 
-     * @param k monenenko kentän sisältö palautetaan 
+     * @param k monenenko kentän sisältö palautetaan
      * @return kentän sisältö merkkijonona 
      */ 
-    public String anna(int k) {
+    public String annappa(int k) {
         switch (k) {
         case 0: return "" + id;
         case 1: return "" + aika;
@@ -191,19 +213,10 @@ public class Ratkaisu implements Cloneable {
         case 3: return "" + kellonaika;
         case 4: return "" + dnf;
         case 5: return "" + kaksiS;
-        case 6: return "" + naytaSekoitus(sekoitukset.annaSekoitukset(getSekoitusId()));
+        case 6: return "" + Integer.toString(sekoitusId);
+        
         default: return "";
         }
-    }
-    
-    
-    private String naytaSekoitus(List<Sekoitus> sek) {
-        if (sek == null || sek.isEmpty()) return "";
-        StringBuilder sb = new StringBuilder();
-        sb.append(sek.getFirst().toString());
-        Mjonot.erota(sb, '|');
-        String sekoitus = Mjonot.erota(sb, '|');
-        return sekoitus;
     }
     
     
@@ -213,7 +226,7 @@ public class Ratkaisu implements Cloneable {
         String erotin = "";
         for (int k = 0; k < getKenttia()-1; k++) {
             sb.append(erotin);
-            sb.append(anna(k));
+            sb.append(annappa(k));
             erotin = "|";
         }
         sb.append(erotin);
@@ -225,18 +238,18 @@ public class Ratkaisu implements Cloneable {
     /**
      * @param k mikä kenttä
      * @param jono kentän syöte
+     * @param rekisteri rekisteri
      * @return virhe tai null
      */
-    public String aseta(int k, String jono) {
+    public String aseta(int k, String jono, Rekisteri rekisteri) {
         String tjono = jono.trim();
-//        StringBuilder sb = new StringBuilder(tjono);
         switch (k) {
         case 0: 
             if (tjono.matches("")) return "Ratkaisun id:tä ei ole mahdollista muokata";
             return null;
         case 1:
             if (!tjono.matches("\\d{2};\\d{2},\\d{3}")) return "Ratkaisun ajan tulee olla muotoa '00;00,000'";
-            aika = tjono;
+            setAika(tjono);
             return null;
         case 2: 
             String virhe = "Päivämäärän tulee olla muotoa '00.00.0000'";
@@ -247,79 +260,95 @@ public class Ratkaisu implements Cloneable {
             if (n>31 || n<1) return virhe;
             n = Integer.valueOf(toka);
             if (n>12 || n<1) return virhe;
-            pvm = tjono;
+            setPvm(tjono);
             return null;
         case 3:
             if (!tjono.matches("\\d{2}.\\d{2}")) return "Kellonajan tulee olla muotoa '00.00'";
-            kellonaika = tjono;
+            setKellonaika(tjono);
             return null;
         case 4:
             if (tjono.matches("") || tjono.isEmpty()) return "DNF tulee olla muotoa 'T' tai 'F'";
-            dnf = tjono;
+            setDnf(tjono);
             return null;
         case 5:
             if (tjono.matches("") || tjono.isEmpty()) return "+2s tulee olla muotoa 'T' tai 'F'";
-            kaksiS = tjono;
+            set2s(tjono);
             return null;
-        case 6: 
-            List<Sekoitus> sek = getSekoitus();
-            return sek.getFirst().aseta(tjono);
+        case 6:
+            setSekoitus(rekisteri.etsiTaiLuoSekoitus(tjono).getId());
+            return null;
         default:
             return null;
         }
     }
     
     
-    public String setId(String s) {
-        if (s.matches("")) return "Ratkaisun id:tä ei ole mahdollista muokata";
-        return null;
+    /**
+     * muokkaa id:n
+     * @param s vaihdettu id
+     */
+    public void setId(@SuppressWarnings("unused") String s) {
+        // ei käytössä
+        return;
     }
     
-    public String setAika(String s) {
-        if (!s.matches("\\d{2};\\d{2},\\d{3}")) return "Ratkaisun ajan tulee olla muotoa '00;00,000'";
-        aika = s;
-        return null;
+    /**
+     * muokkaa ajan
+     * @param s vaihdettu aika
+     */
+    public void setAika(String s) {
+        this.aika = s;
     }   
     
-    public String setPvm(String s) {
-        String virhe = "Päivämäärän tulee olla muotoa '00.00.0000'";
-        if (!s.matches("\\d{2}.\\d{2}.\\d{4}")) return virhe;
-        String eka = s.substring(0,2);
-        String toka = s.substring(3,5);
-        int n = Integer.valueOf(eka);
-        if (n>31 || n<1) return virhe;
-        n = Integer.valueOf(toka);
-        if (n>12 || n<1) return virhe;
-        pvm = s;
-        return null;
+    /**
+     * muokkaa päivämäärän
+     * @param s vaihdettu päivämäärä
+     */
+    public void setPvm(String s) {
+        this.pvm = s;
     }   
     
-    public String setKellonaika(String s) {
-        if (!s.matches("\\d{2}.\\d{2}")) return "Kellonajan tulee olla muotoa '00.00'";
-        kellonaika = s;
-        return null;
+    /**
+     * muokkaa kellonajan
+     * @param s vaihdettu kellonaika
+     */
+    public void setKellonaika(String s) {
+        this.kellonaika = s;
     }   
     
-    public String setDnf(String s) {
-        if (s.matches("") || s.isEmpty()) return "DNF tulee olla muotoa 'T' tai 'F'";
-        dnf = s;
-        return null;
+    /**
+     * muokkaa dnf:n
+     * @param s vaihdettu dnf
+     */
+    public void setDnf(String s) {
+        this.dnf = s;
     }   
     
-    public String set2s(String s) {
-        if (s.matches("") || s.isEmpty()) return "+2s tulee olla muotoa 'T' tai 'F'";
-        kaksiS = s;
-        return null;
+    /**
+     * muokkaa kaksiS:n
+     * @param s vaihdettu kaksiS
+     */
+    public void set2s(String s) {
+        this.kaksiS = s;
     }   
     
-    public String setSekoitus() {
-        return null;
+    /**
+     * muokkaa sekoitus id:n
+     * @param s vaihdettu sekoituksen id
+     */
+    public void setSekoitus(int s) {
+        this.sekoitusId = s;
     }   
     
     
+    /**
+     * palauttaa kenttien nimet
+     * @param k mikä kenttä
+     * @return kentän nimi
+     */
     public String getKysymys(int k) {
         switch (k) {
-        case 0: return "Ratkaisun id";
+        case 0: return "Ratkaisun ID:";
         case 1: return "Aika:";
         case 2: return "Päivämäärä:";
         case 3: return "Kellonaika:";
@@ -390,7 +419,7 @@ public class Ratkaisu implements Cloneable {
     public boolean equals(Ratkaisu ratkaisu) {
         if ( ratkaisu == null ) return false;
         for (int k = 0; k < getKenttia(); k++)
-            if ( !anna(k).equals(ratkaisu.anna(k)) ) return false;
+            if ( !annappa(k).equals(ratkaisu.annappa(k)) ) return false;
         return true;
     }
 
@@ -409,7 +438,7 @@ public class Ratkaisu implements Cloneable {
 
     
     /**
-     * @param args ei
+     * @param args ei käytössä
      */
     public static void main(String[] args) {
         Ratkaisu eka = new Ratkaisu();

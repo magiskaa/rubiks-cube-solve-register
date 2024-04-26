@@ -72,27 +72,27 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
     }
     
     /**
-     * Korvaa jäsenen tietorakenteessa.  Ottaa jäsenen omistukseensa.
-     * Etsitään samalla tunnusnumerolla oleva jäsen.  Jos ei löydy,
-     * niin lisätään uutena jäsenenä.
-     * @param ratkaisu lisätäävän jäsenen viite.  Huom tietorakenne muuttuu omistajaksi
+     * Korvaa ratkaisun tietorakenteessa.  Ottaa ratkaisun omistukseensa.
+     * Etsitään samalla tunnusnumerolla oleva ratkaisu.  Jos ei löydy,
+     * niin lisätään uutena ratkaisuna.
+     * @param ratkaisu lisätäävän ratkaisun viite.  Huom tietorakenne muuttuu omistajaksi
      * @throws SailoException jos tietorakenne on jo täynnä
      * <pre name="test">
      * #THROWS SailoException,CloneNotSupportedException
      * #PACKAGEIMPORT
-     * Jasenet jasenet = new Jasenet();
-     * Jasen aku1 = new Jasen(), aku2 = new Jasen();
+     * Ratkaisut jasenet = new Ratkaisut();
+     * Ratkaisu aku1 = new Ratkaisu(), aku2 = new Ratkaisu();
      * aku1.rekisteroi(); aku2.rekisteroi();
-     * jasenet.getLkm() === 0;
-     * jasenet.korvaaTaiLisaa(aku1); jasenet.getLkm() === 1;
-     * jasenet.korvaaTaiLisaa(aku2); jasenet.getLkm() === 2;
-     * Jasen aku3 = aku1.clone();
+     * ratkaisut.getLkm() === 0;
+     * ratkaisut.korvaaTaiLisaa(aku1); ratkaisut.getLkm() === 1;
+     * ratkaisut.korvaaTaiLisaa(aku2); ratkaisut.getLkm() === 2;
+     * Ratkaisu aku3 = aku1.clone();
      * aku3.setPostinumero("00130");
-     * Iterator<Jasen> it = jasenet.iterator();
+     * Iterator<Jasen> it = ratkaisut.iterator();
      * it.next() == aku1 === true;
-     * jasenet.korvaaTaiLisaa(aku3); jasenet.getLkm() === 2;
-     * it = jasenet.iterator();
-     * Jasen j0 = it.next();
+     * ratkaisut.korvaaTaiLisaa(aku3); ratkaisut.getLkm() === 2;
+     * it = ratkaisut.iterator();
+     * Ratkaisu j0 = it.next();
      * j0 === aku3;
      * j0 == aku3 === true;
      * j0 == aku1 === false;
@@ -187,48 +187,42 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
 
     
     /**
+     * etsii ratkaisuista ne ratkaisut jotka sopivat hakuehtoon
      * @param hakuehto hakuehto jolla haetaan
      * @return ratkaisut jotka toteuttavat hakuehdon
      */
     public Collection<Ratkaisu> etsi(String hakuehto) {
         String ehto = "*";
         if (hakuehto != null && hakuehto.length() > 0) ehto = hakuehto;
-//        int k = 0;
         List<Ratkaisu> loytyneet = new ArrayList<Ratkaisu>();
         for (Ratkaisu ratkaisu : this) {
-            if (WildChars.onkoSamat(ratkaisu.anna(0), ehto)) {
+            if (WildChars.onkoSamat(ratkaisu.annappa(0), ehto)) {
                 loytyneet.add(ratkaisu);
-//                k = 0;
             }
-            else if (WildChars.onkoSamat(ratkaisu.anna(1), ehto)) {
+            else if (WildChars.onkoSamat(ratkaisu.annappa(1), ehto)) {
                 loytyneet.add(ratkaisu);
-//                k = 1;
             }
-            else if (WildChars.onkoSamat(ratkaisu.anna(2), ehto)) {
+            else if (WildChars.onkoSamat(ratkaisu.annappa(2), ehto)) {
                 loytyneet.add(ratkaisu);
-//                k = 2;
             }
-            else if (WildChars.onkoSamat(ratkaisu.anna(3), ehto)) {
+            else if (WildChars.onkoSamat(ratkaisu.annappa(3), ehto)) {
                 loytyneet.add(ratkaisu);
-//                k = 3;
             }
-            else if (WildChars.onkoSamat(ratkaisu.anna(4), ehto)) {
+            else if (WildChars.onkoSamat(ratkaisu.annappa(4), ehto)) {
                 loytyneet.add(ratkaisu);
-//                k = 4;
             }
-            else if (WildChars.onkoSamat(ratkaisu.anna(5), ehto)) {
+            else if (WildChars.onkoSamat(ratkaisu.annappa(5), ehto)) {
                 loytyneet.add(ratkaisu);
-//                k = 5;
-            }
-            else if (WildChars.onkoSamat(ratkaisu.anna(6), ehto)) {
-                loytyneet.add(ratkaisu);
-//                k = 6;
             }
         }
-//        Collections.sort(loytyneet, new Ratkaisu.Vertailija(k));
         return loytyneet;
     }
 
+    /**
+     * järjestää ratkaisut tiettyyn järjestykseen ja palauttaa ne
+     * @param k minkä mukaan järjestetään
+     * @return palauttaa ratkaisut järjestettynä
+     */
     public Collection<Ratkaisu> jarjesta(int k) {
         List<Ratkaisu> loytyneet = new ArrayList<Ratkaisu>();
         for (Ratkaisu ratkaisu : this) {
@@ -255,7 +249,7 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
     }
     
     /**
-     * lukee tiedostosta 
+     * lukee tiedot tiedostosta 
      * @param tied tiedosto
      * @throws SailoException virhe
      */
@@ -279,7 +273,7 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
     }
     
     /**
-     * lukee tiedostosta
+     * lukee tiedot tiedostosta
      * @throws SailoException virhe
      */
     public void lueTiedostosta() throws SailoException {
@@ -287,7 +281,7 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
     }
     
     /**
-     * Tallentaa tiedostoon
+     * Tallentaa muutokset tiedostoon
      * @throws SailoException ei vielä osata tallettaa tiedostoa
      */
     public void tallenna() throws SailoException {
@@ -403,7 +397,7 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
     }
     
     /**
-     * @param args ei
+     * @param args ei käytössä
      */
     public static void main(String[] args) {
         Ratkaisut ratkaisut = new Ratkaisut();
