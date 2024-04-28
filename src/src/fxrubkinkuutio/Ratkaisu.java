@@ -275,6 +275,9 @@ public class Ratkaisu implements Cloneable {
             set2s(tjono);
             return null;
         case 6:
+            if (tjono.matches("\\d{1}") || tjono.matches("\\d{2}") || tjono.matches("\\d{3}") || tjono.matches("\\d{4}")) {
+                return " ";
+            }
             setSekoitus(rekisteri.etsiTaiLuoSekoitus(tjono).getId());
             return null;
         default:
