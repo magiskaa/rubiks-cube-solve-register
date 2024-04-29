@@ -117,6 +117,17 @@ public class Sekoitus implements Cloneable {
         if (id >= seuraavaId) seuraavaId = id + 1;
     }
     
+    /**
+     * Palauttaa sekoituksen tiedot merkkijonona jonka voi tallentaa tiedostoon
+     * @return sekoitus tolppaeroteltuna merkkijonona 
+     * @example
+     * <pre name="test">
+     *   Sekoitus sekoitus = new Sekoitus();
+     *   sekoitus.parse("2|L' D F2 D2 R F R' U2 L B2 U L F2 B' R U' R2 D' U2 B");
+     *   sekoitus.toString()    === "2|L' D F2 D2 R F R' U2 L B2 U L F2 B' R U' R2 D' U2 B|";
+     * </pre>
+     */
+
     @Override
     public String toString() {
         return "" + getId() + "|" + sekoitus + "|";
@@ -134,6 +145,20 @@ public class Sekoitus implements Cloneable {
     /**
      * erottaa tiedoston rivistä kaikki omiin muuttujiin
      * @param rivi tiedoston rivi jossa on dataa
+     * @example
+     * <pre name="test">
+     *   Sekoitus sekoitus = new Sekoitus();
+     *   sekoitus.parse("2|L' D F2 D2 R F R' U2 L B2 U L F2 B' R U' R2 D' U2 B");
+     *   sekoitus.toString()    === "2|L' D F2 D2 R F R' U2 L B2 U L F2 B' R U' R2 D' U2 B|";
+     *   
+     *   sekoitus.rekisteroi();
+     *   int n = sekoitus.getId();
+     *   sekoitus.parse(""+(n+20));
+     *   sekoitus.rekisteroi();
+     *   sekoitus.getId() === n+20+1;
+     *   sekoitus.toString()     === "" + (n+20+1) + "|L' D F2 D2 R F R' U2 L B2 U L F2 B' R U' R2 D' U2 B|";
+     * </pre>
+
      */
     public void parse(String rivi) {
         StringBuilder sb = new StringBuilder(rivi);

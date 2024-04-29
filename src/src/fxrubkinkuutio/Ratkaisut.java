@@ -41,21 +41,19 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
      * @example
      * <pre name="test">
      * #THROWS SailoException 
+     * #import java.util.*;
      * Ratkaisut ratkaisut = new Ratkaisut();
-     * Ratkaisu eka = new Ratkaisu(), toka = new Ratkaisu();
+     * Ratkaisu rat1 = new Ratkaisu(), rat2 = new Ratkaisu();
      * ratkaisut.getLkm() === 0;
-     * ratkaisut.lisaa(eka); ratkaisut.getLkm() === 1;
-     * ratkaisut.lisaa(toka); ratkaisut.getLkm() === 2;
-     * ratkaisut.lisaa(eka); ratkaisut.getLkm() === 3;
-     * ratkaisut.anna(0) === eka;
-     * ratkaisut.anna(1) === toka;
-     * ratkaisut.anna(2) === eka;
-     * ratkaisut.anna(1) == eka === false;
-     * ratkaisut.anna(1) == toka === true;
-     * ratkaisut.anna(3) === eka; #THROWS IndexOutOfBoundsException 
-     * ratkaisut.lisaa(eka); ratkaisut.getLkm() === 4;
-     * ratkaisut.lisaa(eka); ratkaisut.getLkm() === 5;
-     * ratkaisut.lisaa(eka);  #THROWS SailoException
+     * ratkaisut.lisaa(rat1); ratkaisut.getLkm() === 1;
+     * ratkaisut.lisaa(rat2); ratkaisut.getLkm() === 2;
+     * ratkaisut.lisaa(rat1); ratkaisut.getLkm() === 3;
+     * Iterator<Ratkaisu> it = ratkaisut.iterator(); 
+     * it.next() === rat1;
+     * it.next() === rat2; 
+     * it.next() === rat1;  
+     * ratkaisut.lisaa(rat1); ratkaisut.getLkm() === 4;
+     * ratkaisut.lisaa(rat1); ratkaisut.getLkm() === 5;
      * </pre>
      */
     public void lisaa(Ratkaisu ratkaisu) {
@@ -77,25 +75,26 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
      * niin lisätään uutena ratkaisuna.
      * @param ratkaisu lisätäävän ratkaisun viite.  Huom tietorakenne muuttuu omistajaksi
      * @throws SailoException jos tietorakenne on jo täynnä
+     * @example
      * <pre name="test">
      * #THROWS SailoException,CloneNotSupportedException
      * #PACKAGEIMPORT
-     * Ratkaisut jasenet = new Ratkaisut();
-     * Ratkaisu aku1 = new Ratkaisu(), aku2 = new Ratkaisu();
-     * aku1.rekisteroi(); aku2.rekisteroi();
+     * Ratkaisut ratkaisut = new Ratkaisut();
+     * Ratkaisu rat1 = new Ratkaisu(), rat2 = new Ratkaisu();
+     * rat1.rekisteroi(); rat2.rekisteroi();
      * ratkaisut.getLkm() === 0;
-     * ratkaisut.korvaaTaiLisaa(aku1); ratkaisut.getLkm() === 1;
-     * ratkaisut.korvaaTaiLisaa(aku2); ratkaisut.getLkm() === 2;
-     * Ratkaisu aku3 = aku1.clone();
-     * aku3.setPostinumero("00130");
-     * Iterator<Jasen> it = ratkaisut.iterator();
-     * it.next() == aku1 === true;
-     * ratkaisut.korvaaTaiLisaa(aku3); ratkaisut.getLkm() === 2;
+     * ratkaisut.korvaaTaiLisaa(rat1); ratkaisut.getLkm() === 1;
+     * ratkaisut.korvaaTaiLisaa(rat2); ratkaisut.getLkm() === 2;
+     * Ratkaisu rat3 = rat1.clone();
+     * rat3.setKellonaika("00.30");
+     * Iterator<Ratkaisu> it = ratkaisut.iterator();
+     * it.next() == rat1 === true;
+     * ratkaisut.korvaaTaiLisaa(rat3); ratkaisut.getLkm() === 2;
      * it = ratkaisut.iterator();
      * Ratkaisu j0 = it.next();
-     * j0 === aku3;
-     * j0 == aku3 === true;
-     * j0 == aku1 === false;
+     * j0 === rat3;
+     * j0 == rat3 === true;
+     * j0 == rat1 === false;
      * </pre>
      */
     public void korvaaTaiLisaa(Ratkaisu ratkaisu) throws SailoException {
@@ -170,7 +169,7 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
      * @return löytyneen ratkaisun indeksi tai -1 jos ei löydy 
      * <pre name="test"> 
      * #THROWS SailoException  
-     * Ratkaisut ratkaisut = new Ratkaisu(); 
+     * Ratkaisut ratkaisut = new Ratkaisut(); 
      * Ratkaisu rat1 = new Ratkaisu(), rat2 = new Ratkaisu(), rat3 = new Ratkaisu(); 
      * rat1.rekisteroi(); rat2.rekisteroi(); rat3.rekisteroi(); 
      * int id1 = rat1.getId(); 
@@ -190,6 +189,26 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
      * etsii ratkaisuista ne ratkaisut jotka sopivat hakuehtoon
      * @param hakuehto hakuehto jolla haetaan
      * @return ratkaisut jotka toteuttavat hakuehdon
+     * @example 
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     *   Ratkaisut ratkaisut = new Ratkaisut(); 
+     *   Ratkaisu ratkaisu1 = new Ratkaisu(); ratkaisu1.parse("1|00;43,348|03.04.2024|07.24|F|F|1"); 
+     *   Ratkaisu ratkaisu2 = new Ratkaisu(); ratkaisu2.parse("2|00;36,345||13.01|F|F|2"); 
+     *   Ratkaisu ratkaisu3 = new Ratkaisu(); ratkaisu3.parse("3|00;24,256|03.04.2024|21.35|F|F|3"); 
+     *   Ratkaisu ratkaisu4 = new Ratkaisu(); ratkaisu4.parse("4|00;35,635|03.04.2024||F|T|4"); 
+     *   Ratkaisu ratkaisu5 = new Ratkaisu(); ratkaisu5.parse("5|00;22,136|03.04.2024|18.32|T|F|5"); 
+     *   ratkaisut.lisaa(ratkaisu1); ratkaisut.lisaa(ratkaisu2); ratkaisut.lisaa(ratkaisu3); ratkaisut.lisaa(ratkaisu4); ratkaisut.lisaa(ratkaisu5);
+     *   List<Ratkaisu> loytyneet;  
+     *   loytyneet = (List<Ratkaisu>)ratkaisut.etsi("*13*");  
+     *   loytyneet.size() === 2;  
+     *   loytyneet.get(0) == ratkaisu2 === true;
+     *   loytyneet.get(1) == ratkaisu5 === true;
+     *     
+     *   loytyneet = (List<Ratkaisu>)ratkaisut.etsi("*256*");  
+     *   loytyneet.size() === 1;  
+     *   loytyneet.get(0) == ratkaisu3 === true;
+     * </pre> 
      */
     public Collection<Ratkaisu> etsi(String hakuehto) {
         String ehto = "*";
@@ -356,9 +375,9 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
 
 
         /**
-         * Onko olemassa vielä seuraavaa jäsentä
+         * Onko olemassa vielä seuraavaa ratkaisua
          * @see java.util.Iterator#hasNext()
-         * @return true jos on vielä jäseniä
+         * @return true jos on vielä ratkaisuja
          */
         @Override
         public boolean hasNext() {
@@ -367,8 +386,8 @@ public class Ratkaisut implements Iterable<Ratkaisu> {
 
 
         /**
-         * Annetaan seuraava jäsen
-         * @return seuraava jäsen
+         * Annetaan seuraava ratkaisu
+         * @return seuraava ratkaisu
          * @throws NoSuchElementException jos seuraava alkiota ei enää ole
          * @see java.util.Iterator#next()
          */

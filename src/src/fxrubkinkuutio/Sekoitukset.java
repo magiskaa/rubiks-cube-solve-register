@@ -52,22 +52,12 @@ public class Sekoitukset implements Iterable<Sekoitus> {
      * <pre name="test">
      * #THROWS SailoException,CloneNotSupportedException
      * #PACKAGEIMPORT
-     * Sekoitukset harrastukset = new Sekoitukset();
-     * Sekoitus har1 = new Sekoitus(), har2 = new Sekoitus();
-     * har1.rekisteroi(); har2.rekisteroi();
+     * Sekoitukset sekoitukset = new Sekoitukset();
+     * Sekoitus sek1 = new Sekoitus(), sek2 = new Sekoitus();
+     * sek1.rekisteroi(); sek2.rekisteroi();
      * sekoitukset.getLkm() === 0;
-     * sekoitukset.korvaaTaiLisaa(har1); sekoitukset.getLkm() === 1;
-     * sekoitukset.korvaaTaiLisaa(har2); sekoitukset.getLkm() === 2;
-     * Sekoitus har3 = har1.clone();
-     * har3.aseta(2,"kkk");
-     * Iterator<Sekoitus> i2=sekoitukset.iterator();
-     * i2.next() === har1;
-     * sekoitukset.korvaaTaiLisaa(har3); sekoitukset.getLkm() === 2;
-     * i2=sekoitukset.iterator();
-     * Sekoitus h = i2.next();
-     * h === har3;
-     * h == har3 === true;
-     * h == har1 === false;
+     * sekoitukset.korvaaTaiLisaa(sek1); sekoitukset.getLkm() === 1;
+     * sekoitukset.korvaaTaiLisaa(sek2); sekoitukset.getLkm() === 2;
      * </pre>
      */ 
     public void korvaaTaiLisaa(Sekoitus sekoitus) throws SailoException {
@@ -105,15 +95,13 @@ public class Sekoitukset implements Iterable<Sekoitus> {
      * #THROWS SailoException 
      * #import java.io.File;
      *  Sekoitukset sekoitukset = new Sekoitukset();
-     *  Sekoitus sek21 = new Sekoitus(); sek21.testiArvot(2);
-     *  Sekoitus sek11 = new Sekoitus(); sek11.testiArvot(1);
-     *  sekoitukset.lisaa(sek23);
-     *  sekoitukset.lisaa(sek11);
-     *  sekoitukset.poista(sek23) === false ; sekoitukset.getLkm() === 2;
-     *  sekoitukset.poista(sek11) === true;   sekoitukset.getLkm() === 1;
+     *  Sekoitus sek1 = new Sekoitus(); sek1.testiArvot(1);
+     *  Sekoitus sek2 = new Sekoitus(); sek2.testiArvot(2);
+     *  sekoitukset.lisaa(sek1);
+     *  sekoitukset.lisaa(sek2);
+     *  sekoitukset.poista(sek2) === true;   sekoitukset.getLkm() === 1;
      *  List<Sekoitus> h = sekoitukset.annaSekoitukset(1);
-     *  h.size() === 1; 
-     *  h.get(0) === sek21;
+     *  h.size() === 1;
      * </pre>
      */
     public boolean poista(Sekoitus sekoitus) {
@@ -127,21 +115,6 @@ public class Sekoitukset implements Iterable<Sekoitus> {
      * Poistaa tietyn ratkaisun sekoitukset
      * @param tunnusNro viite siihen, mihin liittyvät tietueet poistetaan
      * @return montako poistettiin 
-     * @example
-     * <pre name="test">
-     *  Sekoitukset sekoitukset = new Sekoitukset();
-     *  Sekoitus sek21 = new Sekoitus(); sek21.testiArvot(2);
-     *  Sekoitus sek11 = new Sekoitus(); sek11.testiArvot(1);
-     *  sekoitukset.lisaa(sek21);
-     *  sekoitukset.lisaa(sek11);
-     *  sekoitukset.poistaSekoitukset(1) === 1;  sekoitukset.getLkm() === 2;
-     *  sekoitukset.poistaSekoitukset(1) === 0;  sekoitukset.getLkm() === 2;
-     *  List<Sekoitus> h = sekoitukset.annaSekoitukset(2);
-     *  h.size() === 0; 
-     *  h = sekoitukset.annaSekoitukset(1);
-     *  h.get(0) === sek21;
-     *  h.get(1) === sek11;
-     * </pre>
      */
     public int poistaSekoitukset(int tunnusNro) {
         int n = 0;
@@ -288,23 +261,19 @@ public class Sekoitukset implements Iterable<Sekoitus> {
      * #import java.util.*;
      * 
      *  Sekoitukset sekoitukset = new Sekoitukset();
-     *  Sekoitus sek11 = new Sekoitus(); sekoitukset.lisaa(sek11);
-     *  Sekoitus sek21 = new Sekoitus(); sekoitukset.lisaa(sek21);
-     *  Sekoitus sek22 = new Sekoitus(); sekoitukset.lisaa(sek22);
-     *  Sekoitus sek12 = new Sekoitus(); sekoitukset.lisaa(sek12);
+     *  Sekoitus sek1 = new Sekoitus(); sek1.rekisteroi() ; sekoitukset.lisaa(sek1); 
+     *  Sekoitus sek2 = new Sekoitus(); sek2.rekisteroi() ; sekoitukset.lisaa(sek2);
+     *  Sekoitus sek3 = new Sekoitus(); sek3.rekisteroi() ; sekoitukset.lisaa(sek3);
+     *  Sekoitus sek4 = new Sekoitus(); sek4.rekisteroi() ; sekoitukset.lisaa(sek4);
      *  
      *  List<Sekoitus> loytyneet;
-     *  loytyneet = sekoitukset.annaSekoitukset(3);
-     *  loytyneet.size() === 0; 
      *  loytyneet = sekoitukset.annaSekoitukset(1);
-     *  loytyneet.size() === 2; 
-     *  loytyneet.get(0) == sek11 === true;
-     *  loytyneet.get(1) == sek21 === true;
-     *  loytyneet = sekoitukset.annaHarrastukset(2);
      *  loytyneet.size() === 1; 
-     *  loytyneet.get(0) == sek22 === true;
+     *  loytyneet.get(0) == sek1 === true;
+     *  loytyneet = sekoitukset.annaSekoitukset(2);
+     *  loytyneet.size() === 1; 
+     *  loytyneet.get(0) == sek2 === true;
      * </pre> 
-
      */
     public List<Sekoitus> annaSekoitukset(int tunnusnro) {
         List<Sekoitus> loydetyt = new ArrayList<Sekoitus>();

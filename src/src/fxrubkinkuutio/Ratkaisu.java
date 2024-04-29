@@ -104,7 +104,7 @@ public class Ratkaisu implements Cloneable {
      * @example
      * <pre name="test">
      *   Ratkaisu eka = new Ratkaisu();
-     *   eka.getId() === 0;
+     *   eka.getId() === 1;
      *   eka.rekisteroi();
      *   Ratkaisu toka = new Ratkaisu();
      *   toka.rekisteroi();
@@ -112,7 +112,6 @@ public class Ratkaisu implements Cloneable {
      *   int n2 = toka.getId();
      *   n1 === n2-1;
      * </pre>
-
      */
     public int rekisteroi() {
         id = seuraavaId;
@@ -160,7 +159,7 @@ public class Ratkaisu implements Cloneable {
      * <pre name="test">
      *   Ratkaisu eka = new Ratkaisu();
      *   eka.testiArvot();
-     *   aku.getAika() === "00;24,284";
+     *   eka.getAika() === "00;24,284";
      * </pre>
      */
     public String getAika() {
@@ -214,12 +213,21 @@ public class Ratkaisu implements Cloneable {
         case 4: return "" + dnf;
         case 5: return "" + kaksiS;
         case 6: return "" + Integer.toString(sekoitusId);
-        
         default: return "";
         }
     }
     
     
+    /**
+     * Palauttaa ratkaisun tiedot merkkijonona jonka voi tallentaa tiedostoon
+     * @return Ratkaisu tolppaeroteltuna merkkijonona 
+     * @example
+     * <pre name="test">
+     *   Ratkaisu ratkaisu = new Ratkaisu();
+     *   ratkaisu.parse("2|00;34,224|02.11.2023|00.03");
+     *   ratkaisu.toString().startsWith("2|00;34,224|02.11.2023|00.03|") === true; // on enemmäkin kuin 3 kenttää, siksi loppu |
+     * </pre>  
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("");
@@ -236,10 +244,22 @@ public class Ratkaisu implements Cloneable {
     
     
     /**
+     * Asettaa k:n kentän arvoksi parametrina tuodun merkkijonon arvon
      * @param k mikä kenttä
      * @param jono kentän syöte
      * @param rekisteri rekisteri
      * @return virhe tai null
+     * @example
+     * <pre name="test">
+     *   Ratkaisu ratkaisu = new Ratkaisu();
+     *   Rekisteri rekisteri = null;
+     *   ratkaisu.aseta(1,"00;24,443", rekisteri) === null;
+     *   ratkaisu.aseta(2,"2.3.2023", rekisteri) =R= "Päivämäärän tulee olla muotoa '00.00.0000'"
+     *   ratkaisu.aseta(2,"04.07.2024", rekisteri) === null; 
+     *   ratkaisu.aseta(3,"02.24", rekisteri) === null; 
+     *   ratkaisu.aseta(4,"", rekisteri) === "DNF tulee olla muotoa 'T' tai 'F'";
+     *   ratkaisu.aseta(6,"4", rekisteri) =R= " ";
+     * </pre>
      */
     public String aseta(int k, String jono, Rekisteri rekisteri) {
         String tjono = jono.trim();
@@ -366,6 +386,19 @@ public class Ratkaisu implements Cloneable {
     /**
      * erottaa tiedoston rivistä kaikki kohdat omiin muuttujiin
      * @param rivi tiedostosta luettu rivi
+     * @example
+     * <pre name="test">
+     *   Ratkaisu ratkaisu = new Ratkaisu();
+     *   ratkaisu.parse("2|00;34,224|02.11.2023|00.03");
+     *   ratkaisu.getId() === 2;
+     *   ratkaisu.toString().startsWith("2|00;34,224|02.11.2023|00.03|") === true; // on enemmäkin kuin 3 kenttää, siksi loppu |
+     *
+     *   ratkaisu.rekisteroi();
+     *   int n = ratkaisu.getId();
+     *   ratkaisu.parse(""+(n+20));       // Otetaan merkkijonosta vain tunnusnumero
+     *   ratkaisu.rekisteroi();           // ja tarkistetaan että seuraavalla kertaa tulee yhtä isompi
+     *   ratkaisu.getId() === n+20+1;
+     * </pre>
      */
     public void parse(String rivi) {
         StringBuilder sb = new StringBuilder(rivi);

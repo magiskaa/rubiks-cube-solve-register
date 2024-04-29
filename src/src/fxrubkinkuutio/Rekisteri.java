@@ -9,7 +9,37 @@ import java.util.List;
  * @author Valtteri
  * @version 18.3.2024
  *
- */
+ *
+ ** Testien alustus
+ * @example
+ * <pre name="testJAVA">
+ *  private Rekisteri rekisteri;
+ *  private Ratkaisu rat1;
+ *  private Ratkaisu rat2;
+ *  private int rid1;
+ *  private int rid2;
+ *  private Sekoitus sek1;
+ *  private Sekoitus sek2;
+ *  
+ *  public void alustaRekisteri() {
+ *    rekisteri = new Rekisteri();
+ *    rat1 = new Ratkaisu(); rat1.testiArvot(); rat1.rekisteroi();
+ *    rat2 = new Ratkaisu(); rat2.testiArvot(); rat2.rekisteroi();
+ *    rid1 = rat1.getId();
+ *    rid2 = rat2.getId();
+ *    sek1 = new Sekoitus(rid1); sek1.testiArvot(rid1); sek1.rekisteroi();
+ *    sek2 = new Sekoitus(rid2); sek2.testiArvot(rid2); sek2.rekisteroi();
+ *    try {
+ *    rekisteri.lisaa(rat1);
+ *    rekisteri.lisaa(rat2);
+ *    rekisteri.lisaa(sek1);
+ *    rekisteri.lisaa(sek2);
+ *    } catch ( Exception e) {
+ *       System.err.println(e.getMessage());
+ *    }
+ *  }
+ * </pre>
+*/
 public class Rekisteri {
     private Ratkaisut ratkaisut = new Ratkaisut();
     private Sekoitukset sekoitukset = new Sekoitukset();
@@ -26,6 +56,14 @@ public class Rekisteri {
      * poistaa ratkaisun
      * @param ratkaisu poistettava ratkaisu
      * @return poistettujen määrä
+     * @example
+     * <pre name="test">
+     * #THROWS Exception
+     *   alustaRekisteri();
+     *   rekisteri.getRatkaisuja() === 2;
+     *   rekisteri.poista(rat1) === 1;
+     *   rekisteri.getRatkaisuja() === 1;
+     * </pre>
      */
     public int poista(Ratkaisu ratkaisu) {
         if (ratkaisu == null) return 0;
@@ -40,24 +78,12 @@ public class Rekisteri {
      * @throws SailoException virhe jos lisääminen ei onnistu
      * @example
      * <pre name="test">
-     * #THROWS SailoException
-     * Rekisteri rekisteri = new Rekisteri();
-     * Ratkaisu eka = new Ratkaisu(), toka = new Ratkaisu();
-     * eka.rekisteroi(); toka.rekisteroi();
-     * rekisteri.getRatkaisuja() === 0;
-     * rekisteri.lisaa(eka); rekisteri.getRatkaisuja() === 1;
-     * rekisteri.lisaa(toka); rekisteri.getRatkaisuja() === 2;
-     * rekisteri.lisaa(eka); rekisteri.getRatkaisuja() === 3;
-     * rekisteri.getRatkaisuja() === 3;
-     * rekisteri.annaRatkaisu(0) === eka;
-     * rekisteri.annaRatkaisu(1) === toka;
-     * rekisteri.annaRatkaisu(2) === eka;
-     * rekisteri.annaRatkaisu(3) === eka; #THROWS IndexOutOfBoundsException 
-     * rekisteri.lisaa(eka); rekisteri.getRatkaisuja() === 4;
-     * rekisteri.lisaa(eka); rekisteri.getRatkaisuja() === 5;
-     * rekisteri.lisaa(eka);            #THROWS SailoException
+     * #THROWS SailoException  
+     *  alustaRekisteri();
+     *  rekisteri.getRatkaisuja() === 2;
+     *  rekisteri.lisaa(rat1);
+     *  rekisteri.getRatkaisuja() === 3;
      * </pre>
-
      */
     public void lisaa(Ratkaisu ratkaisu) throws SailoException {
         ratkaisut.lisaa(ratkaisu);
@@ -81,11 +107,19 @@ public class Rekisteri {
     }
     
     /** 
-     * Korvaa jäsenen tietorakenteessa.  Ottaa jäsenen omistukseensa. 
-     * Etsitään samalla tunnusnumerolla oleva jäsen.  Jos ei löydy, 
-     * niin lisätään uutena jäsenenä. 
-     * @param ratkaisu lisätäävän jäsenen viite.  Huom tietorakenne muuttuu omistajaksi 
+     * Korvaa ratkaisun tietorakenteessa.  Ottaa ratkaisun omistukseensa. 
+     * Etsitään samalla tunnusnumerolla oleva ratkaisu.  Jos ei löydy, 
+     * niin lisätään uutena ratkaisuna. 
+     * @param ratkaisu lisättävän ratkaisun viite.  Huom tietorakenne muuttuu omistajaksi 
      * @throws SailoException jos tietorakenne on jo täynnä 
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException  
+     *  alustaRekisteri();
+     *  rekisteri.getRatkaisuja() === 2;
+     *  rekisteri.korvaaTaiLisaa(rat1);
+     *  rekisteri.getRatkaisuja() === 2;
+     * </pre>
      */ 
     public void korvaaTaiLisaa(Ratkaisu ratkaisu) throws SailoException { 
         ratkaisut.korvaaTaiLisaa(ratkaisu); 
@@ -118,9 +152,22 @@ public class Rekisteri {
 
     
     /**
+     * etsii kaikki ratkaisut jotka sopivat hakuehtoon
      * @param hakuehto hakuehto
      * @return ratkaisut jotka sopivat hakuehtoon
      * @throws SailoException virhe
+     * @example 
+     * <pre name="test">
+     *   #THROWS CloneNotSupportedException, SailoException
+     *   alustaRekisteri();
+     *   Ratkaisu ratkaisu3 = new Ratkaisu(); ratkaisu3.rekisteroi();
+     *   ratkaisu3.setAika("00;34,242");
+     *   rekisteri.lisaa(ratkaisu3);
+     *   Collection<Ratkaisu> loytyneet = rekisteri.etsi("*34*");
+     *   loytyneet.size() === 1;
+     *   Iterator<Ratkaisu> it = loytyneet.iterator();
+     *   it.next() == ratkaisu3 === true; 
+     * </pre>
      */
     public Collection<Ratkaisu> etsi(String hakuehto) throws SailoException {
         return ratkaisut.etsi(hakuehto);
@@ -170,6 +217,17 @@ public class Rekisteri {
      * @param ratkaisu ratkaisu
      * @return viite sekoitukseen
      * @throws SailoException virhe
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException
+     * #import java.util.*;
+     * 
+     *  alustaRekisteri();
+     *  List<Sekoitus> loytyneet;
+     *  loytyneet = rekisteri.annaSekoitukset(rat1);
+     *  loytyneet.size() === 1; 
+     *  loytyneet.get(0) == sek1 === true;
+     * </pre> 
      */
     public List<Sekoitus> annaSekoitukset(Ratkaisu ratkaisu) throws SailoException {
         return sekoitukset.annaSekoitukset(ratkaisu.getSekoitusId());   
