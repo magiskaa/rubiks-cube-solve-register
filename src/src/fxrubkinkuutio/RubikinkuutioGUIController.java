@@ -1,9 +1,11 @@
 package fxrubkinkuutio;
 
 import static fxrubkinkuutio.RubikinkuutioRatkaisuDialogController.getFieldId; 
+
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -15,6 +17,8 @@ import javafx.scene.layout.GridPane;
 import fi.jyu.mit.fxgui.*;
 import fi.jyu.mit.ohj2.Mjonot;
 import javafx.application.Platform;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 
@@ -29,6 +33,9 @@ public class RubikinkuutioGUIController implements Initializable {
     @FXML private ScrollPane panelRatkaisu;
     @FXML private GridPane gridRatkaisu;
     @FXML private TextField hakuehto;
+    @FXML private TextField parasAika;
+    @FXML private TextField huonoinAika;
+    @FXML private TextField keskiarvo;
     
     /**
      * alustus
@@ -163,7 +170,8 @@ public class RubikinkuutioGUIController implements Initializable {
     }
     
     /**
-     * näyttää valitun ratkaisun sekä mahdollisen sekoituksen tekstialueella
+     * näyttää valitun ratkaisun sekä mahdollisen sekoituksen tekstialueella. näyttää myös parhaimman ajan, huonoimman
+     * ajan sekä aikojen keskiarvon.
      * @throws SailoException virhe
      */
     protected void naytaRatkaisu() throws SailoException {
@@ -172,6 +180,43 @@ public class RubikinkuutioGUIController implements Initializable {
         
         RubikinkuutioRatkaisuDialogController.naytaRatkaisu(edits, ratkaisuKohdalla);
         naytaSekoitukset(ratkaisuKohdalla);
+        
+        parasAika.clear();
+        Collection<Ratkaisu> ratkaisut;
+        ratkaisut = rekisteri.jarjesta(1);
+        Ratkaisu paras = ratkaisut.iterator().next();
+        parasAika.setText(paras.getAika());
+        
+        huonoinAika.clear();
+        final Iterator<Ratkaisu> itr = ratkaisut.iterator();
+        Ratkaisu vika = itr.next();
+        while (itr.hasNext()) {
+            vika = itr.next();
+        }
+        huonoinAika.setText(vika.getAika());        
+        
+        keskiarvo.clear();
+        int lkm = rekisteri.getRatkaisuja();
+        final Iterator<Ratkaisu> ite = ratkaisut.iterator();
+        Ratkaisu rat = null;
+        long ms = 0;
+        while (ite.hasNext()) {
+            rat = ite.next();
+            String aika = rat.getAika();
+            StringBuilder sb = new StringBuilder(aika);
+            ms += Integer.valueOf(Mjonot.erota(sb, ';')) * 60 * 1000;
+            ms += Integer.valueOf(Mjonot.erota(sb, ',')) * 1000;
+            ms += Integer.valueOf(Mjonot.erota(sb, ','));
+        }
+        ms /= lkm;
+        long min = TimeUnit.MILLISECONDS.toMinutes(ms);
+        ms -= min * 60 * 1000;
+        long sek = TimeUnit.MILLISECONDS.toSeconds(ms);
+        ms -= sek * 1000;
+        String minuutit = String.format("%02d", min);
+        String sekunnit = String.format("%02d", sek);
+        String millisek = String.format("%03d", ms);
+        keskiarvo.setText(minuutit + ";" + sekunnit + "," + millisek);
     }
     
     
