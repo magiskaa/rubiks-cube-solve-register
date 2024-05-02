@@ -32,6 +32,7 @@ public class Sekoitus implements Cloneable {
     }
     
     /**
+     * muodostaja
      * @param sekoitus sekoitus stringinä
      */
     public Sekoitus(String sekoitus) {

@@ -175,6 +175,7 @@ public class Rekisteri {
     
     
     /**
+     * palauttaa collectionin jossa ratkaisut ovat halutussa järjestyksessä
      * @param k minkä mukaan järjestetään
      * @return ratkaisut järjestettynä
      */

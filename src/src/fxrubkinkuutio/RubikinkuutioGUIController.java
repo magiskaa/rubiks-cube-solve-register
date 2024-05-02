@@ -139,6 +139,7 @@ public class RubikinkuutioGUIController implements Initializable {
     
     
     /**
+     * lukee tiedot tiedostosta
      * @param nimi tiedoston nimi
      * @return null tai virhe
      */
@@ -221,6 +222,7 @@ public class RubikinkuutioGUIController implements Initializable {
     
     
     /**
+     * näyttää sekoitukset
      * @param ratkaisu ratkaisu
      */
     public void naytaSekoitukset(Ratkaisu ratkaisu) {
@@ -238,6 +240,7 @@ public class RubikinkuutioGUIController implements Initializable {
 
     
     /**
+     * erottaa sekoituksen
      * @param rivi rivi
      * @return sekoitus
      */
@@ -283,6 +286,7 @@ public class RubikinkuutioGUIController implements Initializable {
     }
     
     /**
+     * järjestää sekoitukset tietyn kohdan mukaan
      * @param k minkä mukaan järjestetään
      */
     public void jarjesta(int k) {

@@ -55,6 +55,7 @@ public class RubikinkuutioRatkaisuDialogController implements ModalControllerInt
     
     
     /**
+     * luo kentät joihin tulee ratkaisun tiedot
      * @param gridRatkaisu ni
      * @return ni
      */
@@ -98,7 +99,7 @@ public class RubikinkuutioRatkaisuDialogController implements ModalControllerInt
     }
     
     /**
-     * 
+     * alustus
      */
     protected void alusta() {
         edits = luoKentat(gridRatkaisu);
@@ -129,6 +130,7 @@ public class RubikinkuutioRatkaisuDialogController implements ModalControllerInt
     
     
     /**
+     * käsittelee muutoksen ratkaisuun jos sellainen on tehty
      * @param edit tekstikenttä
      */
     private void kasitteleMuutosRatkaisuun(TextField edit) {
@@ -168,6 +170,7 @@ public class RubikinkuutioRatkaisuDialogController implements ModalControllerInt
     }
 
     /**
+     * näyttää ratkaisun tiedot kentissä
      * @param edits lista
      * @param ratkaisu ratkaisu
      */
@@ -181,6 +184,7 @@ public class RubikinkuutioRatkaisuDialogController implements ModalControllerInt
     
     
     /**
+     * laittaa näkyviin muokkaa ikkunan
      * @param modalityStage ni
      * @param oletus ni
      * @param rekisteri ni

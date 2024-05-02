@@ -73,6 +73,7 @@ public class Sekoitukset implements Iterable<Sekoitus> {
     }
     
     /**
+     * palauttaa viitten sekoitukseen jos samanlainen on jo olemassa, luo uuden jos ei 
      * @param sekoitus sekoitus stringinä
      * @return viite sekoitukseen jos sekoitus löytyy, null jos ei
      */
