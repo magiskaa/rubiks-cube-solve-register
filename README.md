@@ -1,6 +1,4 @@
-# pohja
+# Rubik's Cube Solve Register
 
-Pohja kevään 2024 harjoitustöiden GIT-repoille
-
-Lue käyttöohjeet TIMistä: <https://tim.jyu.fi/view/kurssit/tie/ohj2/tyokalut/git/ohj2git#fork>
-
+A register where users can add, delete, modify or inspect their Rubik's Cube solves. This project 
+was created on the course Ohjelmointi 2 at the University of Jyväskylä.
